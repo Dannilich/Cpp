@@ -1,0 +1,130 @@
+
+
+void lab_selection()
+{
+	cout << "Лабораторная \"Выборка\"" << endl << endl;
+
+
+	struct good
+	{
+		string name;
+		int price;
+
+		good(string newName, int newPrice) {
+			name = newName;
+			price = newPrice;
+		}
+	};
+
+
+	vector <good*> goods = {
+	/*	new good("Молоко"  ,56),
+		new good("Ряженка" ,38),
+		new good("Творог"  ,105),
+		new good("Сметана" ,92),
+		new good("Кефир"   ,30)*/
+	};
+
+
+	ifstream input("input Selection lab.txt");
+	if (!input.is_open()) {
+		cout << "Не удалось открыть файл !";
+		input.close();
+		return;
+	}
+
+	int BUDGET;
+	input >> BUDGET;
+
+	string nameOfProduct;
+	int priceOfProduct;
+	do
+	{
+		input >> nameOfProduct;
+		input >> priceOfProduct;
+
+		goods.push_back( new good(nameOfProduct, priceOfProduct) );
+
+	} while (!input.eof());
+	
+	input.close();
+
+
+	int goodsAmount = goods.size();
+	/*cout << goodsAmount;
+
+	for (good *item : goods) {
+		cout << endl << item->name;
+	}*/
+	bitset<16> maskOfSelection(pow(2,goodsAmount)-1);
+	//cout << maskOfSelection;
+
+
+	bitset<16> optimumSelectionInBinary (0);
+	bitset<16> selection(0);
+	int sumToSpend;
+	int minChange = BUDGET;
+
+	for (unsigned short selectionToBinary = 0; selectionToBinary <= maskOfSelection.to_ulong(); selectionToBinary++)
+	{
+		sumToSpend = 0;
+		selection = selectionToBinary;
+		//cout << endl << selection;
+
+		for (int i = 0; i < selection.size(); i++ )
+		{
+			if (selection.test(i))
+			{
+				sumToSpend += goods.at(i)->price;
+			}
+		}
+	
+		if ((BUDGET - sumToSpend) >= 0 && (BUDGET - sumToSpend) < minChange)
+		{
+			//optimumSelectionInBinary = selection;
+			minChange = BUDGET - sumToSpend;
+		}
+	}
+
+
+	ofstream output("output Selection lab.txt", ios::out | ios::trunc);
+
+
+
+	output << "Минимальная сдача:" << minChange;
+	output << endl << endl << "Возможные максимизированный по бюджету список покупок:";
+	int countOfpurchaiseList = 0;
+
+	for (unsigned short selectionToBinary = 0; selectionToBinary <= maskOfSelection.to_ulong(); selectionToBinary++)
+	{
+		sumToSpend = 0;
+		selection = selectionToBinary;
+
+		for (int i = 0; i < selection.size(); i++)
+		{
+			if (selection.test(i))
+			{
+				sumToSpend += goods.at(i)->price;
+			}
+		}
+
+		if ((BUDGET - sumToSpend) == minChange)
+		{
+			//optimumSelectionInBinary = selection;
+			
+			output << "\n\nСписок " << ++countOfpurchaiseList << ":" << endl;
+
+			for (int i = 0; i < selection.size(); i++)
+			{
+				if (selection.test(i))
+				{
+					output << endl << goods.at(i)->name << ": " <<  goods.at(i)->price;
+				}
+			}
+		}
+	}
+
+	output.close();
+}
+
+
