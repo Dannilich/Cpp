@@ -1,0 +1,45 @@
+﻿#include <iostream>
+
+using namespace std;
+
+
+int main()
+{
+	setlocale(LC_ALL ,"ru");
+
+    cout << "Введите радиус большой и малой окружности: ";
+    double R, r; cin >> R >> r;
+    cout << endl;
+
+    cout << "Введите параметры a, b, d, h: ";
+    double a, b, d, h; cin >> a >> b >> d >> h;
+    cout << endl;
+
+
+    double x = 0, y = 0;
+    for (int k = 0; k <= 10; k++)
+    {
+        cout << "k = " << k << " : ";
+
+        x = d + k * h;
+        y = pow(sin(x + a), 1 / b);
+
+        if (int(b) % 2 == 0 && sin(x + a) < 0) {
+            cout << "нельзя вычислисть радикал" << endl;
+            continue;
+        }
+
+        cout
+            << " x = " << x
+            << " y = " << y
+            << " Ответ:  "
+            ;
+
+        (R >= abs(x) && R >= abs(y)) && (r <= abs(x) && r <= abs(y))
+            ? cout << "Точка лежит между окружностями"
+            : cout << "Точка не лежит между окружностями"
+            ;
+
+        cout << endl;
+    }
+}

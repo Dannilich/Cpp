@@ -1,0 +1,70 @@
+﻿#define _USE_MATH_DEFINES
+#include <cmath>
+
+#include <iostream>
+
+using namespace std;
+
+
+int main()
+{
+	setlocale(LC_ALL ,"ru");
+
+    unsigned int n;
+    long double sum = 0;
+
+    long double f = M_PI / 4;
+    cout << "f(x) = Пи / 4  = " << f << endl << endl;
+
+
+    cout << "Способ 1:" << endl << endl;
+
+
+    long double accuracy;
+    cout << "Введите допустимую погрешность: "; cin >> accuracy;
+
+
+    long double inaccuracy = 0;
+    unsigned int amountOfElements = 0;
+    do
+    {
+        amountOfElements += 1;
+        cout << endl << "Количество элементов последовательности: " << amountOfElements;
+
+        sum = 0;
+        for (double i = 1.0; i <= amountOfElements; i++)
+        {
+            sum += pow(-1, i + 1) * (1 / (2 * i - 1));
+            //cout << endl << endl << sum;
+        }
+        cout << "  Сумма = " << sum;
+
+
+        inaccuracy = abs(sum - f);
+        cout << "  Погрешность = " << inaccuracy;
+
+    } while (accuracy < inaccuracy);
+
+
+    cout << endl << "Понадобилось " << amountOfElements << " элементов последовательности";
+
+    //////////////////////
+    cout << endl << endl << "Способ 2:" << endl << endl;
+    /////////////////////
+
+
+
+    cout << "Введите число элементов последовательности: "; cin >> n;
+
+    sum = 0;
+    for (int i = 1; i <= n; i++)
+    {
+        sum += pow(-1, i + 1) * (1 / (2 * i - 1));
+    }
+
+    cout
+        << "Сумма прогрессии: " << sum << endl
+        << "Погрешность: " << f - sum
+        ;
+
+}

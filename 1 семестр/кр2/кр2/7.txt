@@ -1,0 +1,55 @@
+﻿#include <iostream>
+#include <fstream>
+#include <string>
+
+using namespace std;
+
+char vowles[] = {
+	'а', 'у', 'о', 'и', 'э', 'ы', 'я', 'ю', 'е', 'ё',
+	'А', 'У', 'О', 'И', 'Э', 'Ы', 'Я', 'Ю', 'Е', 'Ё'
+};
+int vowlsCount(string str);
+
+int main()
+{
+	setlocale(LC_ALL, "ru");
+
+
+	ifstream inFile("вторые гласные.txt");
+
+
+	string str;
+	unsigned int maxVowles = 0;
+	string maxVovlesWord;
+	
+	while (!inFile.eof())
+	{
+		inFile >> str;
+		if (vowlsCount(str) > maxVowles)
+		{
+			maxVowles = vowlsCount(str);
+			maxVovlesWord = str;
+		}
+	}
+	
+
+	cout << maxVovlesWord << endl << maxVowles;
+}
+
+int vowlsCount(string str) {
+
+	unsigned int count = 0;
+
+	for (char ch : str)
+	{
+		for (char vowel : vowles)
+		{
+			if (ch == vowel)
+			{
+				count++;
+			}
+		}
+	}
+
+	return count;
+}

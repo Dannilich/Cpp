@@ -1,0 +1,55 @@
+﻿#include <iostream>
+
+using namespace std;
+
+
+int main()
+{
+	setlocale(LC_ALL ,"ru");
+	
+	unsigned int n;
+	cout << "Введите количество делителей N: "; cin >> n;
+	cout << endl;
+
+	bool isPrimeNumber= false;
+	unsigned int amountOfDiveders = 0;
+	unsigned int iteration = 0;
+
+	for (int num = 2; num < 200; num++)
+	{
+		isPrimeNumber= true;
+		for (int i = 2; i < num; i++)
+		{
+			if (num % i == 0)
+			{
+				isPrimeNumber= false;
+				break;
+			}		
+		}
+
+		if (isPrimeNumber) {
+			
+
+			amountOfDiveders = 0;
+			iteration = 2;
+
+			while (amountOfDiveders < n + 1 && iteration < 200)
+			{
+				if (iteration % num ==0)
+				{
+					amountOfDiveders++;
+				}
+
+				iteration++;
+			}
+
+			if (amountOfDiveders == n)
+			{
+				cout << "Число " << num << " подходит "<< amountOfDiveders << endl;
+			}
+
+			isPrimeNumber= false;
+		}
+	}
+
+}

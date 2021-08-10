@@ -1,0 +1,52 @@
+﻿#include <iostream>
+#include <fstream>
+#include <string>
+
+#include <windows.h>
+#include <map>
+
+using namespace std;
+
+
+int main()
+{
+    SetConsoleCP(CP_UTF8);
+    SetConsoleOutputCP(CP_UTF8);
+
+
+	string department;
+	int salary;
+	string trash;
+
+	ifstream fileIn("сотрудники.txt");
+
+	map <string, int> totalSallary;
+
+	int stringCount = 1;
+	while (!fileIn.eof())
+	{
+		fileIn >> trash;
+		fileIn >> department;
+		if ( totalSallary.count(department) == 0)
+		{
+			totalSallary[department] = 0;
+		}
+
+		fileIn >> trash;
+		fileIn >> salary;
+		totalSallary[department] += salary;
+
+
+		stringCount++;
+	}
+	
+	map <string, int>::iterator departmentsRaport = totalSallary.begin();
+	while (departmentsRaport != totalSallary.end())
+	{
+		cout << departmentsRaport->first << "  " << departmentsRaport->second << endl;
+
+		departmentsRaport++;
+	}
+
+	
+}

@@ -1,0 +1,60 @@
+﻿#include <iostream>
+#include <time.h>
+
+using namespace std;
+
+
+int main()
+{
+	setlocale(LC_ALL ,"ru");
+	srand(time(NULL));
+	bool isSorted = false;
+
+	unsigned int n;
+	cout << "Введите количество элементов массива N: "; cin >> n;
+	int* arr = (int*)malloc(n * sizeof(int));
+	cout << endl;
+
+	cout << "Исходный массив:" << endl;
+	for (int i = 0; i < n; i++)
+	{
+		arr[i] = 1 + rand() % n;
+		cout << arr[i] << "  ";
+	}
+	cout << endl << endl;
+
+	int trash;
+	int iteration = 1;
+	while (!isSorted && iteration < n-1)
+	{
+		isSorted = true;
+		for (int i = 0; i < n-1; i++)
+		{
+			if (arr[i] % 2 == 0)
+			{
+				if (arr[i] > arr[i + 1])
+				{
+					isSorted = false;
+
+					trash = arr[i];
+					arr[i] = arr[i + 1];
+					arr[i + 1] = trash;
+
+					//arr[i] = arr[i] + arr[i + 1] - (arr[i+1] = arr[i]);
+				}
+			}			
+		}
+
+	/*	if (isSorted)
+		{
+			cout << "преждевременная сортировка" << endl ;
+		}*/
+		iteration++;
+	}
+
+	cout << "Отсортированный массив:" << endl;
+	for (int i = 0; i < n; i++)
+	{
+		cout << arr[i] << "  ";
+	}
+}
