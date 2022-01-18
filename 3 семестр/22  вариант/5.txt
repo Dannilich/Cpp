@@ -1,0 +1,155 @@
+#include <iostream>
+
+
+
+using namespace std;
+
+struct CycleList {
+	int val;
+	CycleList* next = 0;
+	CycleList* first = this;
+
+
+	CycleList(int v = 0) {
+		val = v;
+	}
+
+	void dobavit(CycleList* cl) {
+
+		if (first->next == 0)
+		{
+			next = cl;
+			cl->next = this;
+			
+			cl->first = this;
+			first = this;
+		}
+		else {
+			CycleList* ptr = first;
+
+			while (ptr->next != first)
+			{
+				ptr = ptr->next;
+			}
+
+			ptr->next = cl;
+			cl->next = first;
+			cl->first = first;
+		}
+
+	}
+
+	void updateFirst(CycleList* newFirst) {
+
+		CycleList* oldFirst = first;
+		CycleList* ptr = oldFirst;
+
+		while (ptr->first != newFirst)
+		{
+			ptr->first = newFirst;
+			ptr = ptr->next;
+		}
+	}
+
+
+	CycleList* prokrutka(int n) {
+		
+
+
+		if (n == 1)
+		{
+		
+
+			CycleList* newFirst = first->next;
+
+			CycleList* ptr = first;
+			while (ptr->next != first)
+			{
+				ptr = ptr->next;
+			}
+
+			updateFirst(newFirst);
+
+			ptr->next = newFirst;
+
+		 
+			return newFirst;
+		}
+
+
+		CycleList* ptr = this;
+
+
+		for (int i = 1; i < n - 1; i++)
+		{
+			ptr = ptr->next;
+		}
+
+	
+		if (ptr->next == first)
+		{
+			updateFirst(ptr->next->next);
+		}
+		ptr->next = ptr->next->next;
+
+
+		return ptr->next;
+	}
+
+
+	int poluchit(int n) {
+
+
+		CycleList* ptr = first->prokrutka(n);
+		cout << "\n";
+		ptr->pechat();
+
+		while (ptr->next != ptr)
+		{
+			ptr = ptr->prokrutka(n);
+			ptr->pechat();
+		}
+		 
+
+
+		return ptr->val;
+	}
+
+	void pechat() {
+
+		CycleList* ptr = first;
+
+		cout << "\n";
+		while (ptr->next != first)
+		{
+			cout << ptr->val << " - ";
+			ptr = ptr->next;
+		}
+		cout << ptr->val;
+	}
+};
+
+
+int main()
+{
+	setlocale(LC_ALL, "ru");
+
+	CycleList cl = *new CycleList(0);
+
+	for (int i = 1; i < 10; i++)
+	{
+		cl.dobavit(new CycleList(i));
+	}
+
+	int n;
+
+	cl.pechat();
+
+	cout << "\n\nНомер элементa на выбытие: ";
+
+	cin >> n;
+	cout << "\n\nПолученное число: " << cl.poluchit(n);
+
+	//cl.pechat(); // что бы показать что круг замкнулся
+
+}

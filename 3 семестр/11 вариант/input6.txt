@@ -1,0 +1,9 @@
+3
+1 Cambridge dzerzhinsk +777 mayer 9999
+2 Gazprem dzerzhinsk +555 mayer 66
+3 Zavod California +125 michalich 99999
+
+3
+1 Danil L.A. +898 13 02 2000 9
+2 Aleksey Dzerzhinsk  +899 12 3 2020 8
+3 Sergey Magadan +855 5 6 1990 6

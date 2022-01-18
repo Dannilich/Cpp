@@ -1,0 +1,206 @@
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <clocale>
+
+using namespace std;
+
+class date {
+private:
+	int day, month, year;
+
+public:
+
+	date(int d=0, int m=0, int y=0)
+	{
+		day = d;
+		month = m;
+		year = y;
+	}
+
+	void setDay(int dd) { this->day = dd; };
+	void setMonth(int month) { this->month = month; };
+	void setYear(int year) { this->year = year; };
+
+	int getDay() { return day; };
+	int getMonth() { return month; };
+	int getYear() { return year; };
+};
+
+class patient : public date
+{
+
+private:
+	int code;
+	string fio;
+	string adress;
+
+public:
+	
+	void setCode(int code) { this->code = code; };
+	void setFio(string fio) { this->fio = fio; };
+	void setAdress(string adress) { this->adress = adress; };
+
+
+	int getCode() { return code; };
+	string getFio() { return fio; };
+	string getAdress() { return adress; };
+};
+
+class doctor {
+
+private:
+	int code;
+	string fio;
+	string specialization;
+
+public:
+
+	void setCode(int code) { this->code = code; };
+	void setFio(string fio) { this->fio = fio; };
+	void setSpecialization(string specialization) { this->specialization = specialization; };
+
+	int getCode() { return code; };
+	string getFio() { return fio; };
+	string getSpecialization() { return specialization; };
+
+};
+
+class reception : public date{
+
+private:
+	int patientCode;
+	int doctorCode;
+
+public:
+	void setCode(int code) { this->code = code; };
+
+
+};
+
+int main(){
+
+	setlocale(LC_ALL, "Russian");
+
+ifstream in("input.txt");
+
+int patietsAmount;
+in >> patietsAmount;
+patient* patients = new patient[patietsAmount];
+for (int i = 0; i < patietsAmount; i++)
+{
+	in >> patients[i].code;
+	in >> patients[i].fio;
+	in >> patients[i].adress;
+	in >> patients[i].dateOfBirth.day;
+	in >> patients[i].dateOfBirth.month;
+	in >> patients[i].dateOfBirth.year;
+}
+
+int doctorsAmount;
+in >> doctorsAmount;
+doctor* doctors = new doctor[doctorsAmount];
+for (int i = 0; i < doctorsAmount; i++)
+{
+	in >> doctors[i].code;
+	in >> doctors[i].fio;
+	in >> doctors[i].specialization;
+}
+
+
+in.close();
+
+
+bool isSorted;
+
+patient trash1;
+do
+{
+	isSorted = true;
+
+	for (int i = 0; i < patietsAmount - 1; i++)
+	{
+		if (patients[i].fio > patients[i + 1].fio) {
+			isSorted = false;
+			trash1 = patients[i];
+			patients[i] = patients[i + 1];
+			patients[i + 1] = trash1;
+		}
+	}
+
+
+} while (!isSorted);
+
+doctor trash2;
+do
+{
+	isSorted = true;
+
+	for (int i = 0; i < doctorsAmount - 1; i++)
+	{
+		if (doctors[i].fio > doctors[i + 1].fio) {
+			isSorted = false;
+			trash2 = doctors[i];
+			doctors[i] = doctors[i + 1];
+			doctors[i + 1] = trash2;
+		}
+	}
+
+
+} while (!isSorted);
+
+
+int reciptionsAmount;
+cout << "Количество записей: ";
+cin >> reciptionsAmount;
+reception* reciptions = new reception[reciptionsAmount];
+
+for (int i = 0; i < reciptionsAmount; i++)
+{
+	cout << endl << endl << "Запись №" << i + 1;
+
+	for (int i = 0; i < patietsAmount; i++)
+	{
+		cout << endl << patients[i].code << "  " << patients[i].fio;
+	}
+	cout << endl << "Код пациeнта: ";
+	cin >> reciptions[i].patientCode;
+
+
+	for (int i = 0; i < doctorsAmount; i++)
+	{
+		cout << endl << doctors[i].code << "  " << doctors[i].fio;
+	}
+	cout << endl << "Код Врача: ";
+	cin >> reciptions[i].doctorCode;
+
+	cout << endl << "Дата приёма: ";
+	cin >> reciptions[i].date.day >> reciptions[i].date.month >> reciptions[i].date.year;
+}
+
+
+cout << endl << endl << endl;
+for (int i = 0; i < doctorsAmount; i++)
+{
+	cout << endl << endl << "Врач: " << doctors[i].fio << ":";
+	for (int j = 0; j < reciptionsAmount; j++)
+	{
+		if (doctors[i].code == reciptions[j].doctorCode) {
+
+			for (int c = 0; c < patietsAmount; c++)
+			{
+				if (patients[c].code == reciptions[j].patientCode) {
+					cout << endl << patients[c].fio;
+				}
+			}
+		}
+	}
+}
+
+
+
+
+cout << endl << endl;
+system("pause");
+return 0;
+}

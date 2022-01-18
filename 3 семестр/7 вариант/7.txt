@@ -1,0 +1,126 @@
+#include <iostream>
+#include <fstream>
+
+using namespace std;
+
+class Participant
+{
+private:
+    string name, surname, patronymic;
+    string competition;
+    int result;
+
+
+public:
+    Participant* next = nullptr;
+
+
+    Participant(string name, string surname, string patronymic, string competition, int result)
+    {
+        this->name = name;
+        this->surname = surname;
+        this->patronymic = patronymic;
+        this->competition = competition;
+        this->result = result;
+    }
+
+
+    Participant* add(Participant* p) {
+
+
+        if (this->competition >= p->competition)
+        {
+            if (this->competition == p->competition)
+            {
+                if (this->result < p->result)
+                {
+                    p->next = this;
+                    return p;
+                }
+            }
+            else
+            {
+                p->next = this;
+                return p;
+            }
+        }
+
+
+
+        Participant* ptr = this;
+
+        while (
+            ptr->next != nullptr
+            && (ptr->next->competition == p->competition && ptr->next->result > p->result
+                || ptr->next->competition < p->competition
+                )
+            )
+        {
+            ptr = ptr->next;
+        }
+
+        if (ptr->next == nullptr)
+        {
+            ptr->next = p;
+        }
+        else
+        {
+            Participant* temp = ptr->next;
+            ptr->next = p;
+            p->next = temp;
+        }
+
+
+        return this;
+    }
+
+
+    void print() {
+
+        ofstream output("Output.txt", ios::out | ios::trunc);
+
+        Participant* iterPointer = this;
+        while (iterPointer != nullptr)
+        {
+            output << endl <<
+                iterPointer->competition << "  " <<
+                iterPointer->result << "  " <<
+                iterPointer->name << "  " << iterPointer->surname
+                ;
+            iterPointer = iterPointer->next;
+        }
+
+        output.close();
+    }
+};
+
+
+int main()
+{
+    setlocale(LC_ALL, "rus");
+
+    ifstream input("input.txt");
+
+    int n;
+    input >> n;
+
+    string name, surname, patronymic;
+    string competition;
+    int result;
+
+    input >> name >> surname >> patronymic >> competition >> result;
+    Participant* competitionList = new Participant(name, surname, patronymic, competition, result);
+
+
+    for (int i = 1; i < n; i++)
+    {
+        input >> name >> surname >> patronymic >> competition >> result;
+        competitionList = competitionList->add(new Participant(name, surname, patronymic, competition, result));
+    }
+
+    input.close();
+
+
+    competitionList->print();
+
+}

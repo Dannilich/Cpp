@@ -1,0 +1,108 @@
+#include <iostream>
+#include <fstream>
+
+using namespace std;
+
+class Books 
+{
+    //Модификаторы доступа нужны для управления доступности, видимости содержимого класса
+    //privat - видно только внутри класса (его тупо надо добавить для инкапсуляции(сокрытия из вне))
+private:
+    string name, authorSurname, authorInitials;
+    int amount, price;
+    
+    //public - видно всем
+public:
+    Books* next = 0;
+
+   
+    Books(string n, string an, string ai, int p, int am) {
+        name = n;
+        authorSurname = an;
+        authorInitials = ai;
+        price = p;
+        amount = am;
+    }
+
+   
+    Books* dobavit(Books* b) {
+        if (this->name > b->name)
+        {
+            b->next = this;
+            return b;
+        }
+
+        Books* ptr = this;
+        while (ptr->next != 0 && ptr->next->name < b->name)
+        {
+            ptr = ptr->next;
+        }
+
+        if (ptr->next != 0)
+        {
+            Books* temp = ptr->next;
+            ptr->next = b;
+            b->next = temp;
+            return this;
+        }
+        else
+        {
+            ptr->next = b;
+            return this;
+        }
+    }
+
+    //метод печати: берём указатель на первый элемент 
+    //    и перебирая элемменты через цикл, печатаем и суммируем для итога
+    void pechat() {
+        Books* ptr = this;
+        int sum = 0;
+
+        while (ptr != 0)
+        {
+            cout << "\n" << ptr->name << "  " << ptr->price << " " << ptr->amount;
+            sum += ptr->price * ptr->amount;
+            ptr = ptr->next;
+        }
+
+        cout << "\n\nСуммарная стоимость книг: "<< sum;
+    }
+};
+
+int main()
+{
+    setlocale(LC_ALL, "ru");
+
+    //считываем число записей
+    int n;
+    ifstream fileIn("input.txt");
+    fileIn >> n;
+
+
+    string name, authorSurname, authorInitials;
+    int amount, price;
+
+    fileIn >> name;
+    fileIn >> authorSurname;
+    fileIn >> authorInitials;
+    fileIn >> price;
+    fileIn >> amount;
+
+    //вручную создаём объект для базы книг
+    Books* baza = new Books(name, authorSurname, authorInitials, price, amount);
+    
+    //циклично заполняем остальные
+    for (int i = 1; i < n; i++)
+    {
+
+        fileIn >> name;
+        fileIn >> authorSurname;
+        fileIn >> authorInitials;
+        fileIn >> price;
+        fileIn >> amount;
+
+        baza = baza->dobavit(new Books(name, authorSurname, authorInitials, price, amount));
+    }
+
+    baza->pechat();
+}

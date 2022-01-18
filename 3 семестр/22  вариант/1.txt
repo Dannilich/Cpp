@@ -1,0 +1,77 @@
+#include <iostream>
+#include <fstream>
+
+using namespace std;
+
+
+int main()
+{
+    setlocale(LC_ALL, "ru");
+
+    //считываем размерность матрицы
+    int n, m;
+
+    ifstream fileIn("input.txt");
+    fileIn >> n >> m;
+
+    //инициализируем матрицу
+    int** matrix = new int* [n];
+    for (int i = 0; i < n; i++)
+    {
+        matrix[i] = new int[m];
+    }
+
+    //заполняем матрицу из файла ввода
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < m; j++)
+        {
+            fileIn >> matrix[i][j];
+        }
+    }
+
+
+
+    // выводим исходную матрицу
+    cout << "Текущая матрица";
+    for (int i = 0; i < n; i++)
+    {
+        cout << endl;
+        for (int j = 0; j < m; j++)
+        {
+            cout << matrix[i][j] << "  ";
+        }
+    }
+
+
+    //сортируем
+    for (int i = 0; i < n - 1; i++)
+    {
+        if (matrix[i][1] < matrix[i + 1][1])
+        {
+            //если  2-ой элемент соседних строк в неправильном порядке
+            // то поменять строки местами, по каждому элементу
+            for (int k = 0; k < m; k++)
+            {
+                swap(matrix[i][k], matrix[i + 1][k]); 
+                //специальная функция, которая меняет значения местами
+
+            }
+
+            i = -1;//костыль для начала прохода сортировкой по новой
+        }
+
+    }
+
+
+    
+    cout << endl << "Итоговая матрица";
+    for (int i = 0; i < n; i++)
+    {
+        cout << endl;
+        for (int j = 0; j < m; j++)
+        {
+            cout << matrix[i][j] << "  ";
+        }
+    }
+
+}

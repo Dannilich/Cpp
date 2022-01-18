@@ -1,0 +1,5 @@
+4
+aaa bbb bbb 20
+bbb ccc ccc 10
+aaa bbb bbb 80
+aaa aaa aaa 50

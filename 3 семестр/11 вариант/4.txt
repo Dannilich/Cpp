@@ -1,0 +1,132 @@
+#include <iostream>
+#include <fstream>
+
+using namespace std;
+
+struct Date
+{
+	int dd, mm, yy;
+
+	Date() 
+	{
+		dd = 0;
+		mm = 0;
+		yy = 0;
+	}
+	
+	Date(int d, int m, int y) 
+	{
+		dd = d;
+		mm = m;
+		yy = y;
+	}
+};
+
+struct WrongsDatesStack {
+
+	Date date;
+
+	WrongsDatesStack* previous;
+
+	WrongsDatesStack() {
+		date = *new Date();
+		previous = NULL;
+	};
+	WrongsDatesStack(Date data) {
+		date = data;
+		previous = NULL;
+	}
+
+	void add(WrongsDatesStack* newWrongDate) {
+
+		
+		if(date.dd ==  0 || date.mm == 0 || date.yy == 0)
+		{
+			date = newWrongDate->date;
+		}
+		else
+		{
+			if (previous != NULL)
+			{
+				previous->add(newWrongDate);
+			}
+			else {
+				previous = newWrongDate;
+			}
+		}
+		
+	}
+
+	void del() {
+		if (previous->previous != NULL)
+		{
+			previous->del();
+		}
+		else {
+			previous = NULL;
+		}
+	}
+
+	void print(ofstream& out) {
+
+		if (previous != NULL) {
+			previous->print(out);
+		}
+		out << endl << date.dd <<"." <<date.mm <<"." << date.yy;
+	}
+
+	bool isWrongDate( Date d)
+	{
+		int dm[13] = { 0,31,28,31,30,31,30,31,31,30,31,30,31 };
+		int v;
+		if ((d.yy / 4 == 0 && d.yy / 100 != 0) || d.yy % 400 == 0)
+			v = 1;
+		else
+			v = 0;
+		if (d.yy <= 0) return false;
+		if (d.mm < 1 || d.mm>12) return false;
+		if (d.mm != 2 && (d.dd<1 || d.dd>dm[d.mm])) return false;
+		if (d.mm == 2 && (d.dd < 1 || d.dd>28 + v)) return false;
+		
+		return true;
+	}
+
+
+
+};
+
+
+
+int main()
+{
+    setlocale(LC_ALL, "rus");
+    
+	WrongsDatesStack wrongDates;
+	int count = 0;
+
+
+	ifstream in("input.txt");
+
+	Date temp;
+	do
+	{
+		in >> temp.dd >> temp.mm >> temp.yy;
+		if (wrongDates.isWrongDate(temp))
+		{
+			wrongDates.add(new WrongsDatesStack(temp));
+			count++;
+		}
+
+	} while (!in.eof());
+
+	in.close();
+
+
+	ofstream out("output.txt", ios::out | ios::trunc);
+
+	out << "Всего неправильных дат: " << count;
+	wrongDates.print(out);
+
+	out.close();
+
+}

@@ -1,0 +1,102 @@
+﻿#include <iostream>
+#include <fstream>
+
+using namespace std;
+
+
+struct Task
+{
+    int number;
+    int duration;
+    string executor;
+
+    Task* next = nullptr;
+
+
+
+    Task(int number, int duration, string executor)
+    {
+        this->number = number;
+        this->duration = duration;
+        this->executor = executor;
+    }
+
+
+    Task* add(Task* task)
+    {
+        if (this->duration > task->duration)
+        {
+            task->next = this;
+            return task;
+        }
+
+
+        Task* ptr = this;
+
+
+        while (ptr->next != nullptr && ptr->next->duration <= task->duration)
+        {
+            ptr = ptr->next;
+        }
+
+        if (ptr->next == nullptr)
+        {
+            ptr->next = task;
+        }
+        else
+        {
+            Task* temp = ptr->next;
+            ptr->next = task;
+            task->next = temp;
+        }
+
+
+        return this;
+        
+    }
+
+
+    void printToFile()
+    {
+        ofstream output("output_4_lab.txt", ios::out | ios::trunc);
+
+        Task* iterTask = this;
+        while (iterTask != nullptr)
+        {
+            output << iterTask->duration << "  ";
+            iterTask = iterTask->next;
+        }
+
+        output.close();
+    }
+};
+
+
+int main(){
+{
+    setlocale(LC_ALL, "ru");
+
+
+
+    fstream input("input_4_lab.txt");
+
+    int n;
+    input >> n;
+
+    int number, duration;
+    string executer;
+
+    input >> executer >> duration >> number;
+    Task* taskList = new Task(number, duration, executer);
+
+    for (int i = 1; i < n; i++)
+    {
+        input >> executer >> duration >> number;
+        taskList = taskList->add(new Task(number, duration, executer));
+    }
+
+    input.close();
+
+
+    taskList->printToFile();
+}}

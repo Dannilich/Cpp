@@ -1,0 +1,241 @@
+#include <iostream>
+#include <fstream>
+
+using namespace std;
+
+struct Data
+{
+    int day, month, year;
+
+    Data(int d = 0, int m = 0, int y = 0) {
+        day = d;
+        month = m;
+        year = y;
+    }
+
+};
+
+//нужна для сравнения дат, путём вычитание из первой даты второй
+// если разность < 0, то их визуально можно разместить на числовой прямой, в порядке следования аргументов
+int dataCmp(Data d1, Data d2) {
+    return (d1.day + d1.month * 30 + d1.year * 365) - (d2.day + d2.month * 30 + d2.year * 365);
+}
+
+
+// Интервалы - временые интервалы командировок (начало, конец, рабочий, город)
+struct Intervals 
+{
+    Data begin, end;
+    string worker, city;
+
+    Intervals* next = 0;
+
+   
+    Intervals(string n, string c, Data bg, Data e) {
+        worker = n;
+        city = c;
+        begin = bg;
+        end = e;
+    }
+   
+     void dobavit(Intervals* interval) {
+        
+        Intervals* ptr = this;
+        while (ptr->next != 0 )
+        {
+            ptr = ptr->next;
+        }
+
+         ptr->next = interval;
+    }
+  
+};
+
+struct OcheredVstrech {
+    Intervals* komandirovka = 0;
+    OcheredVstrech* next = 0;
+
+    OcheredVstrech(){
+        komandirovka = 0;
+        next = 0;
+    }
+
+    OcheredVstrech(Intervals* k) {
+        komandirovka = k;
+    }
+
+    void dobavit(Intervals* interval) {
+
+        //если пустое значение командировки у 1-ого элемента, то присвоим в 1-ую
+        if (this->komandirovka == 0)
+        {
+            komandirovka = interval;
+            return;
+        }
+
+        //если уже есть такая командировка у 1-ого элемента, то пропустим (потому что она дублируется)  
+        if (komandirovka == interval)
+        {
+            return;
+        }
+
+        OcheredVstrech* ptr = this;
+        while (ptr->next != 0)
+        {
+            if (ptr->next->komandirovka == interval)
+            {
+                return;//если нашлась та же командировка, то это ненужный дубликат
+            }
+
+            ptr = ptr->next;
+        }
+
+        //если не нашлась та же командировка, то это новая командировка, которую добавим в конец 
+        ptr->next = new OcheredVstrech(interval);
+    }
+
+
+    void pechat() {
+
+        //если пустое значение командировки у 1-ого элемента, то их нет ...
+        if (this->komandirovka == 0)
+        {
+            cout << "Нету встреч";
+            return;
+        }
+
+        OcheredVstrech* ptr = this;
+        int sum = 0;
+        // это очередь, поэтому выводим элементы последовательно, как и добавлялись
+        while (ptr != 0)
+        {
+            cout << "\n" << ptr->komandirovka->worker << "  " << ptr->komandirovka->city;
+            ptr = ptr->next;
+        }
+    }
+};
+
+//выводит Истину или Ложь, как индикатор пересечения командировок
+bool peresekautsa(Intervals* i1, Intervals* i2) {
+
+    if (i1->city != i2->city)
+    {
+        return false;
+    }
+
+    //если начало интеревала 1 <  начало интеревала 2
+    //если 1-ая командировка начинается раньеше 2-ой
+    if ( dataCmp(i1->begin, i2->begin) < 0 )
+    {
+        //если 1-ая командировка заканчивается раньеше начала 2-ой
+        if (dataCmp(i1->end, i2->begin) < 0 )
+        {
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+    }
+    else
+    {
+        //если 2-ая командировка заканчивается раньеше начала 1-ой
+        if (dataCmp(i2->end, i1->begin) < 0)
+        {
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+    }
+}
+
+
+int main()
+{
+    setlocale(LC_ALL, "ru");
+
+    //считываем число записей
+    int n;
+    ifstream fileIn("input.txt");
+    fileIn >> n;
+
+
+    Data begin, end;
+    int bgD, bgM, bgY, eD,eM,eY;
+    string worker, city;
+
+    fileIn >> worker;
+    fileIn >> city;
+   
+    fileIn >> bgD;
+    fileIn >> bgM;
+    fileIn >> bgY;
+   
+    fileIn >> eD;
+    fileIn >> eM;
+    fileIn >> eY;
+
+    begin =  Data(bgD, bgM, bgY);
+    end =  Data(eD, eM, eY);
+
+    //вручную создаём объект для списка командировок
+    Intervals* intervals = new Intervals(worker, city, begin, end);
+    
+    //циклично заполняем остальные
+    for (int i = 1; i < n; i++)
+    {
+
+        fileIn >> worker;
+        fileIn >> city;
+
+        fileIn >> bgD;
+        fileIn >> bgM;
+        fileIn >> bgY;
+
+        fileIn >> eD;
+        fileIn >> eM;
+        fileIn >> eY;
+
+        begin = Data(bgD, bgM, bgY);
+        end = Data(eD, eM, eY);
+
+        intervals->dobavit(new Intervals(worker, city, begin, end));
+    }
+    
+  //создаю очередь для пересекающихся встреч
+    OcheredVstrech* vstr = new OcheredVstrech();
+    
+
+   /*
+   Заполнение очереди пересечения:
+        1)Создаются 2 указателя: на 1-ый элемент и на следующий
+        2)Перебора всех значений осуществляется по принципу перестановок Р(n) = n!
+            - Фиксируется 1 элемент,
+            - После на этот элемент перебираются все следующие элементы по одному
+                - если пара пересекается, то добавляется оба её элемента (защищена от дубликатов)
+            - По завершению перебора, фиксируется следующий элемент и так по циклу...
+   */
+    Intervals* ptr1 = intervals;
+    Intervals* ptr2;
+
+    while (ptr1->next != 0)
+    {
+        ptr2 = ptr1->next;
+        while (ptr2 != 0)
+        {
+            if ( peresekautsa(ptr1, ptr2) )
+            {
+                vstr->dobavit(ptr1);
+                vstr->dobavit(ptr2);
+            }
+
+            ptr2 = ptr2->next;
+        }
+
+        ptr1 = ptr1->next;
+    }
+
+    vstr->pechat();
+}

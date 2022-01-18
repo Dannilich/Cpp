@@ -1,0 +1,319 @@
+﻿#include <iostream>
+#include <fstream>
+#include <string>
+#include <clocale>
+
+
+using namespace std;
+
+int main() {
+
+	setlocale(LC_ALL, "ru");
+
+
+	struct date {
+		int day;
+		int month;
+		int year;
+	};
+
+	struct EducationalInstitution // учебное заведение, команда
+	{
+		int code;
+		string name;
+		string mainTrainer;
+		string address;
+
+		EducationalInstitution() {}
+	};
+
+	struct PlayPlace // площадка проведения игр
+	{
+		int code;
+		string city;
+		string place;
+
+		PlayPlace() {}
+	};
+
+	struct CalendarEntry // календларная запись проведения игры
+	{
+		int team1Code;
+		int team2Code;
+		int placeCode;
+		date date;
+
+		CalendarEntry() {}
+	};
+
+
+
+	ifstream input("input.txt");
+
+	int educationInstTeamsAmount;
+	input >> educationInstTeamsAmount;
+	EducationalInstitution* educationInstTeams = new EducationalInstitution[educationInstTeamsAmount];
+	for (int i = 0; i < educationInstTeamsAmount; i++)
+	{
+		input >> educationInstTeams[i].code;
+		input >> educationInstTeams[i].name;
+		input >> educationInstTeams[i].mainTrainer;
+		input >> educationInstTeams[i].address;
+	}
+
+	int playPlacesAmount;
+	input >> playPlacesAmount;
+	PlayPlace* playPlaces = new PlayPlace[playPlacesAmount];
+	for (int i = 0; i < playPlacesAmount; i++)
+	{
+		input >> playPlaces[i].code;
+		input >> playPlaces[i].city;
+		input >> playPlaces[i].place;
+	}
+
+
+	input.close();
+
+	
+	bool isSorted;
+
+	EducationalInstitution trash1;
+	do
+	{
+		isSorted = true;
+
+		for (int i = 0; i < educationInstTeamsAmount - 1; i++)
+		{
+			if (educationInstTeams[i].name > educationInstTeams[i + 1].name) {
+				isSorted = false;
+				trash1 = educationInstTeams[i];
+				educationInstTeams[i] = educationInstTeams[i + 1];
+				educationInstTeams[i + 1] = trash1;
+			}
+		}
+
+
+	} while (!isSorted);
+
+	PlayPlace trash2;
+	do
+	{
+		isSorted = true;
+
+		for (int i = 0; i < playPlacesAmount - 1; i++)
+		{
+			if (playPlaces[i].place > playPlaces[i + 1].place) {
+				isSorted = false;
+				trash2 = playPlaces[i];
+				playPlaces[i] = playPlaces[i + 1];
+				playPlaces[i + 1] = trash2;
+			}
+		}
+
+
+	} while (!isSorted);
+
+
+
+	int calendarEntrysAmount;
+	cout << "Количество соревнований: ";
+	cin >> calendarEntrysAmount;
+	CalendarEntry* calendar = new CalendarEntry[calendarEntrysAmount];
+
+	for (int i = 0; i < calendarEntrysAmount; i++)
+	{
+		cout << endl << endl << "Запись №" << i + 1;
+
+		for (int i = 0; i < educationInstTeamsAmount; i++)
+		{
+			cout << endl << educationInstTeams[i].code << "  " << educationInstTeams[i].name;
+		}
+		cout << endl << "Код 1 команды: ";
+		cin >> calendar[i].team1Code;
+		cout << endl << "Код 2 команды: ";
+		cin >> calendar[i].team2Code;
+
+
+		for (int i = 0; i < playPlacesAmount; i++)
+		{
+			cout << endl << playPlaces[i].code << "  " << playPlaces[i].city << "  " << playPlaces[i].place;
+		}
+		cout << endl << "Код игровой площадки: ";
+		cin >> calendar[i].placeCode;
+
+		cout << endl << "Дата игры: ";
+		cin >> calendar[i].date.day >> calendar[i].date.month >> calendar[i].date.year;
+	}
+
+
+	cout << endl << endl << endl;
+	for (int i = 0; i < playPlacesAmount; i++)
+	{
+		cout << endl << endl << "Площадка: " << playPlaces[i].place<< "  " << playPlaces[i].city << ":";
+		for (int j = 0; j < calendarEntrysAmount; j++)
+		{
+			if (playPlaces[i].code == calendar[j].placeCode) {
+
+				for (int c = 0; c < educationInstTeamsAmount; c++)
+				{
+					if (educationInstTeams[c].code == calendar[j].team1Code) {
+						cout << endl << educationInstTeams[c].name;
+						break;
+					}
+				}
+				cout << "  против  ";
+				for (int c = 0; c < educationInstTeamsAmount; c++)
+				{
+					if (educationInstTeams[c].code == calendar[j].team2Code) {
+						cout << educationInstTeams[c].name;
+						break;
+					}
+				}
+			}
+		}
+	}
+
+
+
+	/*struct patient {
+		int code;
+		string fio;
+		string adress;
+		date dateOfBirth;
+	};
+
+	struct doctor {
+		int code;
+		string fio;
+		string specialization;
+	};
+
+	struct reception {
+		int patientCode;
+		int doctorCode;
+		date date;
+	};
+
+
+	ifstream in("input.txt");
+
+	int patietsAmount;
+	in >> patietsAmount;
+	patient* patients = new patient[patietsAmount];
+	for (int i = 0; i < patietsAmount; i++)
+	{
+		in >> patients[i].code;
+		in >> patients[i].fio;
+		in >> patients[i].adress;
+		in >> patients[i].dateOfBirth.day;
+		in >> patients[i].dateOfBirth.month;
+		in >> patients[i].dateOfBirth.year;
+	}
+
+	int doctorsAmount;
+	in >> doctorsAmount;
+	doctor* doctors = new doctor[doctorsAmount];
+	for (int i = 0; i < doctorsAmount; i++)
+	{
+		in >> doctors[i].code;
+		in >> doctors[i].fio;
+		in >> doctors[i].specialization;
+	}
+	
+	
+	in.close();
+
+
+	bool isSorted;
+
+	patient trash1;
+	do
+	{
+		isSorted = true;
+
+		for (int i = 0; i < patietsAmount -1; i++)
+		{
+			if (patients[i].fio > patients[i + 1].fio) {
+				isSorted = false;
+				trash1 = patients[i];
+				patients[i] = patients[i + 1];
+				patients[i + 1] = trash1;
+			}
+		}
+
+
+	} while (!isSorted);
+	
+	doctor trash2;
+	do
+	{
+		isSorted = true;
+
+		for (int i = 0; i < doctorsAmount -1; i++)
+		{
+			if (doctors[i].fio > doctors[i + 1].fio) {
+				isSorted = false;
+				trash2 = doctors[i];
+				doctors[i] = doctors[i + 1];
+				doctors[i + 1] = trash2;
+			}
+		}
+
+
+	} while (!isSorted);
+	
+
+	int reciptionsAmount;
+	cout << "Количество записей: ";
+	cin >> reciptionsAmount;
+	reception* reciptions = new reception[reciptionsAmount];
+	
+	for (int i = 0; i < reciptionsAmount; i++)
+	{
+		cout << endl << endl << "Запись №" << i+1;
+		
+		for (int i = 0; i < patietsAmount; i++)
+		{
+			cout << endl << patients[i].code << "  " << patients[i].fio;
+		}
+		cout << endl << "Код пациeнта: ";
+		cin >> reciptions[i].patientCode;
+		
+
+		for (int i = 0; i < doctorsAmount; i++)
+		{
+			cout << endl << doctors[i].code << "  " << doctors[i].fio;
+		}
+		cout << endl << "Код Врача: ";
+		cin >> reciptions[i].doctorCode;
+
+		cout << endl << "Дата приёма: ";
+		cin >> reciptions[i].date.day >> reciptions[i].date.month >> reciptions[i].date.year;
+	}
+	
+
+	cout << endl << endl << endl;
+	for (int i = 0; i < doctorsAmount; i++)
+	{
+		cout << endl << endl <<"Врач: "<< doctors[i].fio <<":";
+		for (int  j = 0; j < reciptionsAmount; j++)
+		{
+			if (doctors[i].code == reciptions[j].doctorCode) {
+
+				for (int c = 0; c < patietsAmount; c++)
+				{
+					if (patients[c].code == reciptions[j].patientCode) {
+						cout << endl << patients[c].fio;
+					}
+				}
+			}
+		}
+	}
+	*/
+
+
+
+	cout << endl << endl;
+	system("pause");
+	return 0;
+}

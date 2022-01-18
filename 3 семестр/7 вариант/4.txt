@@ -1,0 +1,246 @@
+#include <iostream>
+#include <fstream>
+
+using namespace std;
+
+struct Student
+{
+    string name, surname, patronymic;
+    int subjectsCount;
+    int scoreSum;
+    float avg = 0;
+
+    Student* next = nullptr;
+
+    Student(string name, string surname, string patronymic, int score)
+    {
+        this->name = name;
+        this->surname = surname;
+        this->patronymic = patronymic;
+        this->subjectsCount = 1;
+        this->scoreSum = score;
+        this->avg = score;
+    }
+
+    bool isEquals(Student* s1, Student* s2)
+    {
+        return (
+            s1->name == s2->name &&
+            s1->surname == s2->surname &&
+            s1->patronymic == s2->patronymic
+            );
+    }
+
+
+
+    bool isNewStudent(Student* s)
+    {
+
+        if (isEquals(this, s))
+        {
+            return false;
+        }
+        Student* ptr = this;
+
+        while (ptr->next != nullptr)
+        {
+            if (isEquals(ptr->next, s))
+            {
+                return false;
+            }
+            ptr = ptr->next;
+        }
+
+        return true;
+    }
+
+    void uppdateScore(Student* s, int addScore)
+    {
+        s->scoreSum += addScore;
+        s->subjectsCount++;
+    }
+
+    void avgMapping()
+    {
+        Student* ptr = this;
+        ptr->avg = float(ptr->scoreSum / ptr->subjectsCount);
+
+        do
+        {
+            ptr = ptr->next;
+            ptr->avg = float(ptr->scoreSum / ptr->subjectsCount);
+
+        } while (ptr->next != nullptr);
+    }
+
+    Student* add(Student* s) {
+
+
+        if (
+            this->name == s->name && this->surname == s->surname && this->patronymic > s->patronymic
+            || this->name == s->name && this->surname > s->surname
+            || this->name > s->name
+            )
+        {
+            s->next = this;
+            return s;
+        }
+
+
+        Student* ptr = this;
+
+        if (isNewStudent(s))
+        {
+            while (
+                ptr->next != nullptr 
+                && (
+                    ptr->name == s->name && ptr->surname == s->surname && ptr->patronymic < s->patronymic
+                    || ptr->name == s->name && ptr->surname < s->surname
+                    || ptr->name < s->name
+                   )
+                )
+            {
+                ptr = ptr->next;
+            }
+
+            if (ptr->next == nullptr)
+            {
+                ptr->next = s;
+            }
+            else
+            {
+                Student* temp = ptr->next;
+                ptr->next = s;
+                s->next = temp;
+            }
+
+            return this;
+        }
+        else
+        {
+            if (isEquals(s, this))
+            {
+                uppdateScore(this, s->scoreSum);
+                return this;
+            }
+
+            while (ptr->next != nullptr)
+            {
+                if (isEquals(s, ptr->next))
+                {
+                    uppdateScore(ptr->next, s->scoreSum);
+                    return this;
+                }
+
+                ptr = ptr->next;
+            }
+           
+        }
+
+    }
+
+    void swapNext(Student* s)
+    {
+        Student temp = *s->next;
+
+        s->next->name = s->name;
+        s->next->surname = s->surname;
+        s->next->patronymic = s->patronymic;
+        s->next->subjectsCount = s->subjectsCount;
+        s->next->scoreSum = s->scoreSum;
+
+        s->name = temp.name;
+        s->surname = temp.surname;
+        s->patronymic = temp.patronymic;
+        s->subjectsCount = temp.subjectsCount;
+        s->scoreSum = temp.scoreSum;
+    }
+
+    void sort() {
+
+        Student* iterPointer = this;
+
+        while (iterPointer != nullptr)
+        {
+            if (iterPointer->next == nullptr) break;
+
+            if (iterPointer->surname >= iterPointer->next->surname)
+            {
+                if (iterPointer->surname > iterPointer->next->surname)
+                {
+                    swapNext(iterPointer);
+                    iterPointer = this;
+                }
+                else
+                {
+                    if (iterPointer->name >= iterPointer->next->name)
+                    {
+                        if (iterPointer->name > iterPointer->next->name)
+                        {
+                            swapNext(iterPointer);
+                            iterPointer = this;
+                        }
+                        else
+                        {
+                            if (iterPointer->patronymic > iterPointer->next->patronymic)
+                            {
+                                swapNext(iterPointer);
+                                iterPointer = this;
+                            }
+                        }
+                    }
+                }
+            }
+            iterPointer = iterPointer->next;
+        }
+    }
+
+    void print() {
+
+        ofstream output("Output.txt", ios::out | ios::trunc);
+
+        Student* iterPointer = this;
+        while (iterPointer != nullptr)
+        {
+            output << endl <<
+                iterPointer->surname << "  " <<
+                iterPointer->name << "  " <<
+                iterPointer->patronymic << "  " <<
+                iterPointer->avg << "  "
+                ;
+            iterPointer = iterPointer->next;
+        }
+
+        output.close();
+    }
+};
+
+int main()
+{
+    setlocale(LC_ALL, "rus");
+
+    ifstream input("input.txt");
+
+    int n;
+    input >> n;
+
+    string name, surname, patronymic;
+    string subject;
+    int score;
+
+    input >> name >> surname >> patronymic >> subject >> score;
+    Student* studentsList = new Student(name, surname, patronymic, score);
+
+
+    for (int i = 1; i < n; i++)
+    {
+        input >> name >> surname >> patronymic >> subject >> score;
+        studentsList = studentsList->add(new Student(name, surname, patronymic, score));
+    }
+
+    input.close();
+
+    studentsList->avgMapping();
+    studentsList->print();
+
+}

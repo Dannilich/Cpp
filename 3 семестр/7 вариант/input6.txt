@@ -1,0 +1,9 @@
+3
+1 Cambridge Alex 12 05 2002 +859 L/A
+2 Gazprem Vasia 5 05 2000 +212 NN
+3 Zavod leha 12 08 1998 +555 Dzerzhnsk
+
+3
+1 Danil L.A. +898 
+2 Aleksey Dzerzhinsk  +899 
+3 Sergey Magadan +855 

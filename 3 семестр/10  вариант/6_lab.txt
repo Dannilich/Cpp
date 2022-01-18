@@ -1,0 +1,296 @@
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <clocale>
+
+
+using namespace std;
+
+
+
+class Date
+{
+private:
+	int day;
+	int month;
+	int year;
+
+public:
+	Date(int day = 0, int month = 0, int year = 0)
+	{
+		this->day = day;
+		this->month = month;
+		this->year = year;
+	}
+
+
+	void setDay(int day) { this->day = day; };
+	void setMonth(int month) { this->month = month; };
+	void setYear(int year) { this->year = year; };
+
+	int getDay() { return day; };
+	int getMonth() { return month; };
+	int getYear() { return year; };
+};
+
+class EducationalInstitution // учебное заведение, команда
+{
+private:
+	int code;
+	string name;
+	string mainTrainer;
+	string address;
+
+public:
+	EducationalInstitution(int code = 0, string name = "", string mainTrainer = "", string address = "")
+	{
+		this->code = code;
+		this->name = name;
+		this->mainTrainer = mainTrainer;
+		this->address = address;
+	}
+
+
+	void setCode(int code) { this->code = code; };
+	void setName( string name) { this->name = name; };
+	void setMainTrainer(string mainTrainer) { this->mainTrainer = mainTrainer; };
+	void setAddress(string address) { this->address = address; };
+
+	int getCode() { return code; };
+	string getName() { return name; };
+	string getMainTrainer() { return mainTrainer; };
+	string getAddress() { return address; };
+};
+
+class PlayPlace // площадка проведения игр
+{
+private:
+	int code;
+	string city;
+	string place;
+
+public:
+	PlayPlace(int code = 0, string city = "", string place = "")
+	{
+		this->code = code;
+		this->city = city;
+		this->place = place;
+	}
+
+
+	void setCode(int code) { this->code = code; };
+	void setCity(string city) { this->city = city; };
+	void setPlace(string place) { this->place = place; };
+	
+	int	   getCode() {	return code; };
+	string getCity() { return city; };
+	string getPlace() {return place; };
+};
+
+class CalendarEntry : public Date  // календларная запись проведения игры
+{
+private:
+	int team1Code;
+	int team2Code;
+	int placeCode;
+
+public:
+	CalendarEntry(int team1Code = 0, int team2Code = 0, int placeCode = 0)
+	{
+		
+	}
+
+
+	void setTeam1Code(int team1Code) { this->team1Code = team1Code; };
+	void setTeam2Code(int team2Code) { this->team2Code = team2Code; };
+	void setPlaceCode(int placeCode) { this->placeCode = placeCode; };
+	void setDate (int day = 0, int month = 0, int year = 0) 
+	{ 
+		this->setDay(day); 
+		this->setMonth(month);
+		this->setYear(year);
+	};
+
+	int getTeam1Code() { return team1Code; };
+	int getTeam2Code() { return team2Code; };
+	int getPlaceCode() { return placeCode; };
+};
+
+
+
+
+int main() {
+
+	setlocale(LC_ALL, "ru");
+
+
+	int tempInt;
+	string tempString;
+
+
+	ifstream input("input.txt");
+
+	int educationInstTeamsAmount;
+	input >> educationInstTeamsAmount;
+	EducationalInstitution* educationInstTeams = new EducationalInstitution[educationInstTeamsAmount];
+	for (int i = 0; i < educationInstTeamsAmount; i++)
+	{
+		input >>tempInt;
+		educationInstTeams[i].setCode(tempInt);
+
+		input >> tempString;
+		educationInstTeams[i].setName(tempString);
+
+		input >> tempString;
+		educationInstTeams[i].setMainTrainer(tempString);
+
+		input >> tempString;
+		educationInstTeams[i].setAddress(tempString);
+	}
+
+	int playPlacesAmount;
+	input >> playPlacesAmount;
+	PlayPlace* playPlaces = new PlayPlace[playPlacesAmount];
+	for (int i = 0; i < playPlacesAmount; i++)
+	{
+		input >> tempInt;
+		playPlaces[i].setCode(tempInt);
+
+		input >> tempString;
+		playPlaces[i].setCity(tempString);
+
+		input >> tempString;
+		playPlaces[i].setPlace(tempString);
+	}
+
+
+	input.close();
+
+
+	bool isSorted;
+
+	EducationalInstitution trash1;
+	do
+	{
+		isSorted = true;
+
+		for (int i = 0; i < educationInstTeamsAmount - 1; i++)
+		{
+			if (educationInstTeams[i].getName() > educationInstTeams[i + 1].getName()) {
+				isSorted = false;
+				trash1 = educationInstTeams[i];
+				educationInstTeams[i] = educationInstTeams[i + 1];
+				educationInstTeams[i + 1] = trash1;
+			}
+		}
+
+
+	} while (!isSorted);
+
+	PlayPlace trash2;
+	do
+	{
+		isSorted = true;
+
+		for (int i = 0; i < playPlacesAmount - 1; i++)
+		{
+			if (playPlaces[i].getPlace() > playPlaces[i + 1].getPlace()) {
+				isSorted = false;
+				trash2 = playPlaces[i];
+				playPlaces[i] = playPlaces[i + 1];
+				playPlaces[i + 1] = trash2;
+			}
+		}
+
+
+	} while (!isSorted);
+
+
+
+	int calendarEntrysAmount;
+	cout << "Количество соревнований: ";
+	cin >> calendarEntrysAmount;
+	CalendarEntry* calendar = new CalendarEntry[calendarEntrysAmount];
+
+	for (int i = 0; i < calendarEntrysAmount; i++)
+	{
+		cout << endl << endl << "Запись №" << i + 1;
+
+		for (int i = 0; i < educationInstTeamsAmount; i++)
+		{
+			cout << endl << educationInstTeams[i].getCode() << "  " << educationInstTeams[i].getName();
+		}
+		
+		cout << endl << "Код 1 команды: ";
+		cin >> tempInt;
+		calendar[i].setTeam1Code(tempInt);
+
+		cout << endl << "Код 2 команды: ";
+		cin >> tempInt;
+		calendar[i].setTeam2Code(tempInt);
+
+
+		for (int i = 0; i < playPlacesAmount; i++)
+		{
+			cout << endl << playPlaces[i].getCode()<< "  " << playPlaces[i].getCity() << " " << playPlaces[i].getPlace();
+		}
+		cout << endl << "Код игровой площадки: ";
+		cin >> tempInt;
+		calendar[i].setPlaceCode(tempInt);
+
+
+		cout << endl << "Дата игры: ";
+		
+		cout << endl << "День: ";
+		cin >> tempInt;
+		calendar[i].setDay(tempInt);
+		
+		cout  << "Месяц: ";
+		cin >> tempInt;
+		calendar[i].setMonth(tempInt);
+		
+		cout  << "Год: ";
+		cin >> tempInt;
+		calendar[i].setYear(tempInt);
+	}
+
+
+	cout << endl << endl << endl;
+	for (int i = 0; i < playPlacesAmount; i++)
+	{
+		cout << endl << endl << endl
+			<< "Площадка " << playPlaces[i].getPlace() << "  "
+			<< playPlaces[i].getCity() << ":"
+			;
+		for (int j = 0; j < calendarEntrysAmount; j++)
+		{
+			if (playPlaces[i].getCode() == calendar[j].getPlaceCode()) {
+
+				for (int c = 0; c < educationInstTeamsAmount; c++)
+				{
+					if (educationInstTeams[c].getCode() == calendar[j].getTeam1Code()) {
+						cout << endl << " -- " << educationInstTeams[c].getName();
+						break;
+					}
+				}
+				cout << "  против  ";
+				for (int c = 0; c < educationInstTeamsAmount; c++)
+				{
+					if (educationInstTeams[c].getCode() == calendar[j].getTeam2Code()) {
+						cout << educationInstTeams[c].getName();
+						break;
+					}
+				}
+				cout << "  " <<
+					calendar[j].getDay() << "/" <<
+					calendar[j].getMonth() << "/" <<
+					calendar[j].getYear()
+					;
+			}
+
+		}
+
+	}
+
+	cout << endl << endl << endl;
+}

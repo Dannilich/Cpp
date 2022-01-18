@@ -1,0 +1,100 @@
+#include <iostream>
+#include <fstream>
+#include <set>
+#include <vector>
+#include <bitset>
+
+using namespace std;
+
+set <int> unionOfSets(set <int> s1, set <int> s2)
+{
+	for (auto &i : s2) 
+	{
+		s1.insert(i);
+	}
+
+	return s1;
+}
+
+
+int main()
+{
+    setlocale(LC_ALL, "rus");
+
+
+	ifstream input("input.txt");
+
+	int temp;
+
+
+	set <int> mainSet;
+
+	int lenghtOfMainSet;
+	input >> lenghtOfMainSet;
+	
+	for (int i = 0; i < lenghtOfMainSet; i++)
+	{
+		input >> temp;
+		mainSet.insert(temp);
+	}
+
+
+	int othersSetsAmount;
+	input >> othersSetsAmount;
+
+	int* otherSetsLength = new int [othersSetsAmount];
+	vector < set <int> > othersSets (othersSetsAmount);
+
+	for (int i = 0; i < othersSetsAmount; i++)
+	{
+		input >> otherSetsLength[i];
+
+		for (int j = 0; j < otherSetsLength[i]; j++)
+		{
+			input >> temp;
+			othersSets.at(i).insert(temp);
+		}
+	}
+	
+
+
+	int sizeOfCurrentSelection, sizeOfMinminimumFactorizationSelection = othersSetsAmount;
+
+	bitset<16> minminimumFactorizationSelection(0);
+	bitset<16> currentSelection(0);
+	
+	bitset<16> maskOfSelection(pow(2, othersSets.size()) - 1);
+
+	for (int selectionToBinary = 0; selectionToBinary <= maskOfSelection.to_ulong(); selectionToBinary++)
+	{
+		set <int> tempSet;
+		currentSelection = selectionToBinary;
+		sizeOfCurrentSelection = 0;
+		//cout << endl << selection;
+
+		for (int i = 0; i < currentSelection.size(); i++)
+		{
+			if (currentSelection.test(i))
+			{
+				tempSet =  unionOfSets(tempSet, othersSets.at(i));
+				sizeOfCurrentSelection++;
+			}
+		}
+
+		if ( tempSet == mainSet && sizeOfCurrentSelection < sizeOfMinminimumFactorizationSelection)
+		{
+			
+			minminimumFactorizationSelection = currentSelection;
+			sizeOfMinminimumFactorizationSelection = sizeOfCurrentSelection;
+		}
+	}
+
+	cout <<endl <<endl << "Минимальная факторизация множества из подножеств под следующими номерами:";
+	for (int i = 0; i < othersSetsAmount; i++)
+	{
+		if (minminimumFactorizationSelection.test(i))
+		{
+			cout <<endl << i+1;
+		}
+	}
+}

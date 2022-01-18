@@ -1,0 +1,111 @@
+﻿#include <iostream>
+#include <fstream>
+
+using namespace std;
+
+
+struct Good
+{
+    string name;
+    float price;
+    int amount;
+
+    Good* next = nullptr;
+
+
+    Good(string name, float price, int amount) \
+    {
+        this->name = name;
+        this->price = price;
+        this->amount = amount;
+    }
+
+    Good* add(Good* good) {
+
+
+        if (this->name > good->name)
+        {
+            good->next = this;
+            return good;
+        }
+
+
+        Good* ptr = this;
+        
+
+        while (ptr->next != nullptr && ptr->next->name <= good->name)
+        {
+            ptr = ptr->next;
+        }
+
+        if (ptr->next == nullptr)
+        {
+            ptr->next = good;
+        }
+        else
+        {
+            Good* temp = ptr->next;
+            ptr->next = good;
+            good->next = temp;
+        }
+
+
+        return this;
+    }
+
+
+    void print() {
+
+        Good* iterPointer = this;
+        while (iterPointer != nullptr)
+        {
+            cout << iterPointer->name << "  ";
+            iterPointer = iterPointer->next;
+        }
+    }
+
+
+    float sum() {
+
+        float sum = 0;
+
+        Good* iterPointer = this;
+        while (iterPointer != nullptr)
+        {
+            sum += iterPointer->price * iterPointer->amount;
+            iterPointer = iterPointer->next;
+        }
+
+        return sum;
+    }
+};
+
+
+int main()
+{
+    setlocale(LC_ALL, "ru");
+
+    ifstream input("input_3_lab.txt");
+
+    int n;
+    input >> n;
+
+    string name;
+    int price, amount;
+
+    input >> name >> price >> amount;
+    Good * dataBase = new Good(name, price, amount);
+
+
+    for (int i = 1; i < n; i++)
+    {
+        input >> name >> price >> amount;
+        dataBase = dataBase->add(new Good(name, price, amount));
+    }
+
+    input.close();
+
+
+    dataBase->print();
+    cout << endl << endl << "Общая стоимость всех товаров базы данных: " << dataBase->sum();
+}

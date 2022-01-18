@@ -1,0 +1,10 @@
+4
+1 Cambridge Newton UK
+2 California_Institute_of_Technology Feynman California 
+3 University_of_Zurich Einstein Germany
+4 Kaarlov_University Tesla Czech
+
+3
+1 Nizny_Novgorod stadionNN
+2 Moscow stadionM
+3 Dserzhynsk stadion_of_universe

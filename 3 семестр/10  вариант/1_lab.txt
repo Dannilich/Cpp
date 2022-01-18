@@ -1,0 +1,82 @@
+﻿#include <iostream>
+#include <fstream>
+
+using namespace std;
+
+
+int main()
+{
+    setlocale(LC_ALL, "ru");
+
+    int stringsAmount, columnsAmount;
+
+
+    ifstream fileIn("matrix.txt");
+    fileIn >> stringsAmount >> columnsAmount;
+
+    int** matrix = new int* [stringsAmount];
+    for (int i = 0; i < stringsAmount; i++)
+    {
+        matrix[i] = new int[columnsAmount];
+    }
+
+    for (int i = 0; i < stringsAmount; i++) {
+        for (int j = 0; j < columnsAmount; j++)
+        {
+            fileIn >> matrix[i][j];
+        }
+    }
+
+
+
+
+    cout << "Текущая матрица";
+    for (int i = 0; i < stringsAmount; i++)
+    {
+        cout << endl;
+        for (int j = 0; j < columnsAmount; j++)
+        {
+            cout << matrix[i][j] << "  ";
+        }
+    }
+
+
+    int temp;
+    for (int i = 0; i < stringsAmount; i++)
+    {
+
+        for (int j = 0; j < columnsAmount - 1; j++)
+        {
+            // если порядок в строке - неправильный
+            if (matrix[i][j] > matrix[i][j + 1])
+            {
+                // меняем столбцы местами (по каждой строке меняем значения)
+                for (int k = 0; k < stringsAmount; k++)
+                {
+                    temp = matrix[k][j];
+                    matrix[k][j] = matrix[k][j + 1];
+                    matrix[k][j + 1] = temp;
+                }
+
+                j = 0; // возвращаемся к началу
+            }
+            else
+            {
+                continue;
+            }
+        }
+    }
+
+
+
+    cout << endl << "Итоговая матрица";
+    for (int i = 0; i < stringsAmount; i++)
+    {
+        cout << endl;
+        for (int j = 0; j < columnsAmount; j++)
+        {
+            cout << matrix[i][j] << "  ";
+        }
+    }
+
+}

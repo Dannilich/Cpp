@@ -1,0 +1,101 @@
+#include <iostream>
+#include <fstream>
+
+using namespace std;
+
+
+int main()
+{
+    setlocale(LC_ALL, "ru");
+
+
+    // n,m - количество строк и столбцов считываемых с файла
+    int n, m;
+
+    ifstream filein("input.txt");
+    filein >> n >> m;
+
+
+    //создала массив, заполнив его строками (создание матрицы)
+    //исходная матрица
+    int** A = new int* [n];
+    for (int i = 0; i < n; i++)
+    {
+        A[i] = new int[m];
+    }
+
+
+    // считывание матрицы
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < m; j++)
+        {
+            filein >> A[i][j];
+        }
+    }
+
+
+
+    //вывод
+    cout << "Текущая матрица";
+    for (int i = 0; i < n; i++)
+    {
+        cout << endl;
+        for (int j = 0; j < m; j++)
+        {
+            cout << A[i][j] << "  ";
+        }
+    }
+
+
+
+    cout << endl; cout << endl; cout << endl;
+    cout << "Новая матрица матрица:";
+
+    //количество элементов из области
+    int amount;
+
+    //новая матрица и её объявление
+    double** B = new double* [n];
+    for (int i = 0; i < m; i++)
+        B[i] = new double[m];
+
+
+    //заполнеине нов матрицы
+    for (int i = 0; i < n; i++)
+        for (int j = 0; j < m; j++)
+        {
+            //начинаем считать элементы области
+            amount = 0;
+            for (int l = j; l <= m; l++)
+            {
+                for (int k = j - l + i; k <= n; k++)
+                {
+                    if (k >= 0 && k < n && l < m )
+                    {
+                        amount++;
+                    }
+                }
+            }
+            if (amount == 0)
+            {
+                B[i][j] = 0;
+            }
+            else
+            {
+                B[i][j] = pow(A[i][j], 1.0 /amount);
+            }
+
+        }
+
+ 
+    //вывод новой матрицы
+    for (int i = 0; i < n; i++)
+    {
+        cout << endl;
+        for (int j = 0; j < m; j++)
+        {
+            cout << B[i][j] << "  ";
+        }
+    }
+
+}

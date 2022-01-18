@@ -1,0 +1,147 @@
+#include <iostream>
+#include <fstream>
+
+using namespace std;
+
+class Date
+{
+private:
+	int day, month, year;
+
+public:
+	Date()
+	{
+		day = 0;
+		month = 0;
+		year = 0;
+	}
+
+	Date(int d, int m, int y)
+	{
+		day = d;
+		month = m;
+		year = y;
+	}
+
+	void setDay(int dd) { this->day = dd; };
+	void setMonth(int month) { this->month = month; };
+	void setYear(int year) { this->year = year; };
+
+	int getDay() { return day; };
+	int getMonth() { return month; };
+	int getYear() { return year; };
+};
+
+class WrongsDatesStack : public Date
+{
+public:
+	WrongsDatesStack* previous;
+
+	WrongsDatesStack() 
+	{
+		
+		previous = NULL;
+	};
+	WrongsDatesStack(Date data) 
+	{
+		setDay(data.getDay());
+		setMonth(data.getMonth());
+		setYear(data.getYear());
+		previous = NULL;
+	}
+
+	void add(WrongsDatesStack* newWrongDate) {
+
+
+		if (getDay() == 0 || getMonth() == 0 || getYear() == 0)
+		{
+			setDay(newWrongDate->getDay());
+			setMonth(newWrongDate->getMonth());
+			setYear(newWrongDate->getYear());
+		}
+		else
+		{
+			if (previous != NULL)
+			{
+				previous->add(newWrongDate);
+			}
+			else {
+				previous = newWrongDate;
+			}
+		}
+
+	}
+
+	void del() {
+		if (previous->previous != NULL)
+		{
+			previous->del();
+		}
+		else {
+			previous = NULL;
+		}
+	}
+
+	void print(ofstream& out) {
+
+		if (previous != NULL) {
+			previous->print(out);
+		}
+		out << endl << getDay() << "." << getMonth() << "." << getYear();
+	}
+
+	bool isWrongDate(int d, int m, int y)
+	{
+		int dm[13] = { 0,31,28,31,30,31,30,31,31,30,31,30,31 };
+		int v;
+		if ((y / 4 == 0 && y / 100 != 0) || y % 400 == 0)
+			v = 1;
+		else
+			v = 0;
+		if (y <= 0) return false;
+		if (m < 1 || m >12) return false;
+		if (m != 2 && (d  <1 || d>dm[m])) return false;
+		if (m == 2 && (d < 1 || d>28 + v)) return false;
+
+		return true;
+	}
+
+
+
+};
+
+
+
+int main()
+{
+	setlocale(LC_ALL, "rus");
+
+	WrongsDatesStack wrongDates;
+	int count = 0;
+
+
+	ifstream in("input.txt");
+
+	int tempDay, tempMonth, tempYear;
+	do
+	{
+		in >> tempDay >> tempMonth >> tempYear;
+		if (wrongDates.isWrongDate(tempDay, tempMonth, tempYear))
+		{
+			wrongDates.add(new WrongsDatesStack(*new Date(tempDay, tempMonth, tempYear)));
+			count++;
+		}
+
+	} while (!in.eof());
+
+	in.close();
+
+
+	ofstream out("output.txt", ios::out | ios::trunc);
+
+	out << "Всего неправильных дат: " << count;
+	wrongDates.print(out);
+
+	out.close();
+
+}

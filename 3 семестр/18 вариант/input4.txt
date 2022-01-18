@@ -1,0 +1,11 @@
+10
+a1 aaa aaa 25
+b2 bbb bbb 15
+c3 ccc ccc 50
+d4 ddd ddd 10
+e5 eee eee 26
+f6 fff fff 45
+g7 ggg ggg 66
+a8 aaa aaa 75
+b9 bbb bbb 85
+a10 aaa aaa 85

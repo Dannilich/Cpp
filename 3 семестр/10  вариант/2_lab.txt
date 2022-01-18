@@ -1,0 +1,121 @@
+﻿#include <iostream>
+#include <fstream>
+
+using namespace std;
+
+
+int main()
+{
+    setlocale(LC_ALL, "ru");
+
+    int stringsAmount, columnsAmount;
+
+
+    ifstream filein("matrix.txt");
+    filein >> stringsAmount >> columnsAmount;
+
+     int** matrix = new int* [stringsAmount];
+     for (int i = 0; i < stringsAmount; i++)
+     {
+         matrix[i] = new int[columnsAmount];
+     }
+
+     for (int i = 0; i < stringsAmount; i++) {
+         for (int j = 0; j < columnsAmount; j++)
+         {
+             filein >> matrix[i][j];
+         }
+     }
+
+     // код для отладки:
+    /*stringsAmount = 10; columnsAmount = 10;
+    int** matrix = new int* [stringsAmount];
+    for (int i = 0; i < stringsAmount; i++)
+    {
+        matrix[i] = new int[columnsAmount];
+    }
+
+    int trash = 0;
+    for (int i = 0; i < stringsAmount; i++) {
+        for (int j = 0; j < columnsAmount; j++)
+        {
+            matrix[i][j] = ++trash;
+        }
+    }*/
+
+   
+
+
+    cout << "Текущая матрица";
+    for (int i = 0; i < stringsAmount; i++)
+    {
+        cout << endl;
+        for (int j = 0; j < columnsAmount; j++)
+        {
+            cout << matrix[i][j] << "  ";
+        }
+    }
+
+
+    float** newMatrix = new float* [stringsAmount];
+    for (int i = 0; i < stringsAmount; i++)
+    {
+        newMatrix[i] = new float[columnsAmount];
+    }
+
+
+
+    cout << endl; cout << endl; cout << endl;
+    cout << "Новая матрица матрица:";
+
+    
+    int amount;
+    int** A = matrix;
+    int i, j, k, l;
+    double** B;
+
+    B = new double* [stringsAmount];
+    for (i = 0; i < columnsAmount; i++)
+        B[i] = new double[columnsAmount];
+
+    for (i = 0; i < stringsAmount; i++)
+        for (j = 0; j < columnsAmount; j++)
+        {
+            B[i][j] = 0;
+            //cout << endl<<endl << i << "  " << j << ":  ";
+            amount = 0;
+            for (k = 0; k <= j; k++)
+            {
+                for (l = k-i+j; l <= i - k + j; l++)
+                {
+                    if (l >= 0 && l < columnsAmount)
+                    {
+                        B[i][j] += A[l][k];
+                        amount++;
+
+                       //cout << A[l][k] << " - ";
+                    }
+                }
+            }
+            if (amount == 0)
+            {
+                B[i][j] = 0;
+            }
+            else
+            {
+                B[i][j] = float (B[i][j] / amount);
+            }
+
+        }
+
+   // cout << endl << endl << "Текущая матрица";
+    for (int i = 0; i < stringsAmount; i++)
+    {
+        cout << endl;
+        for (int j = 0; j < columnsAmount; j++)
+        {
+            cout << B[i][j] << "  ";
+        }
+    }
+
+}

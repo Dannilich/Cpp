@@ -1,0 +1,123 @@
+#include <iostream>
+#include <fstream>
+
+using namespace std;
+
+class TimeMoment {
+private:
+    int hours, minuts, seconds;
+
+public:
+    TimeMoment(int hours = 0, int minuts = 0, int seconds = 0) {
+        this->hours = hours;
+        this->minuts = minuts;
+        this->seconds = seconds;
+    }
+
+    int cmp(TimeMoment* tm) {
+        return (this->hours * 360 + this->minuts * 60 + this->seconds) - (tm->hours * 360 + tm->minuts * 60 + tm->seconds);
+    }
+};
+
+
+
+
+class Student
+{
+private:
+    string name, surname, patronimyc;
+    int score;
+
+public:
+    Student* next = nullptr;
+
+
+
+    Student(string name = "", string surname = "", string patronimyc = "", int score = 0)
+    {
+        this->name = name;
+        this->surname = surname;
+        this->patronimyc = patronimyc;
+        this->score = score;
+    }
+
+
+    Student* add(Student* st)
+    {
+        if (this->score < st->score)
+        {
+            st->next = this;
+            return st;
+        }
+
+
+        Student* ptr = this;
+
+
+        while (ptr->next != nullptr && ptr->next->score >= st->score)
+        {
+            ptr = ptr->next;
+        }
+
+        if (ptr->next == nullptr)
+        {
+            ptr->next = st;
+        }
+        else
+        {
+            Student* temp = ptr->next;
+            ptr->next = st;
+            st->next = temp;
+        }
+
+
+        return this;
+
+    }
+
+
+    void out()
+    {
+        int i = 0;
+        Student* student = this;
+        while (student != nullptr && i < 6)
+        {
+            cout << endl << i+1 << ": " << student->name << "-- результат:" << student->score;
+            student = student->next;
+            i++;
+        }
+    }
+};
+
+
+int main() {
+
+    setlocale(LC_ALL, "Russian");
+
+
+    fstream input("input.txt");
+
+    int n;
+    input >> n;
+
+    string name, surname, patronimyc;
+    int score;
+
+    input >> name >> surname >> patronimyc >> score;
+    Student* taskList = new Student(name, surname, patronimyc, score);
+
+    for (int i = 1; i < n; i++)
+    {
+        input >> name >> surname >> patronimyc >> score;
+        taskList = taskList->add(new Student(name, surname, patronimyc, score));
+    }
+
+    input.close();
+
+
+    taskList->out();
+
+    cout << endl << endl;
+    system("pause");
+    return 0;
+}

@@ -1,0 +1,102 @@
+﻿#include <iostream>
+#include <fstream>
+#include <string>
+
+using namespace std;
+
+
+struct chelovek {
+    chelovek* next = nullptr;
+    
+    string fullName;
+
+    chelovek(string name, string surname, string otchestvo) {
+
+        name[0] = (char)toupper(name[0]);
+        int i = 1;
+        while (name[i])                           
+        {
+            name[i] = (char)tolower(name[i]);
+            i++;                                  
+        }
+
+        fullName = name + " "  + char (toupper(surname[0])) + ". "  + char (toupper(otchestvo[0])) + ".";
+    }
+};
+
+struct spisokLudeyi{
+    chelovek* first = nullptr;
+    chelovek* last;
+
+    
+    void add(chelovek* chel){
+        if (first == nullptr){
+            first = chel;
+            last = first;
+        }
+        else{
+            last->next = chel;
+            last = chel;
+        }
+    }
+
+
+    void pechat() {
+        chelovek* chel = first;
+        while (chel != nullptr){
+            cout << chel->fullName << endl;
+            chel = chel->next;
+        }
+    }
+
+
+    void sort() {
+        chelovek* chel = first;
+        string temp;
+
+        while (true){
+            if (chel->next == nullptr) {
+                break;
+            }
+
+            if (  chel->fullName > chel->next->fullName){
+                temp = chel->fullName;
+                chel->fullName   = chel->next->fullName;
+                chel->next->fullName =   temp;
+                chel = first;
+            }
+            chel = chel->next;
+        }
+    }
+};
+
+
+int main()
+{
+    setlocale(LC_ALL, "ru");
+
+
+
+    fstream input("input.txt");
+    int n;
+    input >> n;
+    spisokLudeyi ludi;
+
+    string name;
+    string surname;
+    string othcestve;
+
+    for (int i = 0; i < n; i++){
+        input >> name;
+        input >> surname;
+        input >> othcestve;
+
+        ludi.add(new chelovek(name, surname, othcestve));
+    }
+
+    input.close();
+
+
+    ludi.sort();
+    ludi.pechat();
+}

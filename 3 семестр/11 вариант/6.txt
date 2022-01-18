@@ -1,0 +1,228 @@
+#include <iostream>
+#include <fstream>
+#include <vector>
+
+
+using namespace std;
+
+
+class Date
+{
+private:
+	int day, month, year;
+
+public:
+	Date(int day = 0, int month = 0, int year = 0)
+	{
+		this->day = day;
+		this->month = month;
+		this->year = year;
+	}
+
+
+	void setDay(int day) { this->day = day; };
+	void setMonth(int month) { this->month = month; };
+	void setYear(int year) { this->year = year; };
+
+	int getDay() { return day; };
+	int getMonth() { return month; };
+	int getYear() { return year; };
+};
+
+class Employer
+{
+private:
+	int code, salary;
+	string name, address, phone, post;
+
+public:
+	void setCode(int code) { this->code = code; };
+	void setSalary(int salary) { this->salary = salary; };
+	void setName(string name) { this->name = name; };
+	void setAddress(string address) { this->address = address; };
+	void setPhone(string phone) { this->phone = phone; };
+	void setPost(string post) { this->post = post; };
+
+	int getCode() { return code; };
+	int getSalary() { return salary; };
+	string getName() { return name; };
+	string getAddress() { return address; };
+	string getPhone() { return phone; };
+	string getPost() { return post; };
+};
+
+struct Employee : public Date
+{
+private:
+	int code, experience;
+	string fullName, address, phone;
+
+public:
+	void setCode(int code) { this->code = code; };
+	void setExperience(int experience) { this->experience = experience; };
+	void setFullName(string fullName) { this->fullName = fullName; };
+	void setAddress(string address) { this->address = address; };
+	void setPhone(string phone) { this->phone = phone; };
+
+	int getCode() { return code; };
+	int getExperience() { return experience; };
+	string getFullName() { return fullName; };
+	string getPost() { return address; };
+	string getPhone() { return phone; };
+};
+
+struct EmploymentContract : public Date
+{
+private:
+	int employerCode, employeeCode;
+
+public:
+	void setEmployerCode(int employerCode) { this->employerCode = employerCode; };
+	void setEmployeeCode(int employeeCode) { this->employeeCode = employeeCode; };
+
+	int getEmployerCode() { return employerCode; };
+	int getEmployeeCode() { return employeeCode; };
+};
+
+
+
+int main()
+{
+	setlocale(LC_ALL, "rus");
+
+
+	int tempInt;
+	string tempString;
+
+
+	ifstream input("input.txt");
+
+
+	int employersAmount;
+	input >> employersAmount;
+
+	vector <Employer> employers(employersAmount);
+	for (Employer& em : employers)
+	{
+		input >> tempInt;
+		em.setCode(tempInt);
+
+		input >> tempString;
+		em.setName(tempString);
+
+		input >> tempString;
+		em.setAddress(tempString);
+
+		input >> tempString;
+		em.setPhone(tempString);
+
+		input >> tempString;
+		em.setPost(tempString);
+
+		input >> tempInt;
+		em.setSalary(tempInt);
+	}
+
+
+	int employeesAmount;
+	input >> employeesAmount;
+
+	vector <Employee> employees(employeesAmount);
+	for (Employee& em : employees)
+	{
+		input >> tempInt;
+		em.setCode(tempInt);
+
+		input >> tempString;
+		em.setFullName(tempString);
+
+		input >> tempString;
+		em.setAddress(tempString);
+
+		input >> tempString;
+		em.setPhone(tempString);
+
+		input >> tempInt;
+		em.setDay(tempInt);
+
+		input >> tempInt;
+		em.setMonth(tempInt);
+
+		input >> tempInt;
+		em.setYear(tempInt);
+
+		input >> tempInt;
+		em.setExperience(tempInt);
+	}
+
+
+	input.close();
+
+
+	int contractsAmount;
+	cout << "Введите количество заключаемых договоров трудоустройства: ";
+	cin >> contractsAmount;
+
+	vector <EmploymentContract> contracts(contractsAmount);
+
+	for (EmploymentContract& contract : contracts)
+	{
+		cout << "\n\n\n";
+
+
+		for (Employer em : employers)
+		{
+			cout << em.getCode() << "  ";
+			cout << em.getName() << "  ";
+		}
+		cout << "\n\nВведите код работадателя: ";
+		cin >> tempInt;
+		contract.setEmployerCode(tempInt);
+		cout << endl << endl;
+
+		for (Employee em : employees)
+		{
+			cout << em.getCode() << "  ";
+			cout << em.getFullName() << "  ";
+		}
+		cout << "\n\nВведите код нанимаемого: ";
+		cin >> tempInt;
+		contract.setEmployeeCode(tempInt);
+		cout << endl << endl;
+
+
+		cout << endl << "Введите дату найма:";
+
+		cout << endl << "День: ";
+		cin >> tempInt;
+		contract.setDay(tempInt);
+
+		cout << "Месяц: ";
+		cin >> tempInt;
+		contract.setMonth(tempInt);
+
+		cout << "Год: ";
+		cin >> tempInt;
+		contract.setYear(tempInt);
+	}
+
+	cout << "\n\n\n\nСписок трудоустроенных по компаниям:";
+	for (Employer emploer : employers)
+	{
+		cout << endl << endl;
+
+		cout << "Компания: " << emploer.getName();
+		for (EmploymentContract contract : contracts)
+		{
+			if (emploer.getCode() == contract.getEmployerCode())
+				for (Employee employee : employees)
+					if (employee.getCode() == contract.getEmployeeCode())
+					{
+						cout << "\n -- " << employee.getFullName();
+						break;
+					}
+
+		}
+
+	}
+}

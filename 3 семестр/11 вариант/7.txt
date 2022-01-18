@@ -1,0 +1,172 @@
+#include <iostream>
+#include <fstream>
+
+using namespace std;
+
+class Agent
+{
+private:
+    string name, surname, patronymic;
+    float sum = 0;
+
+
+public:
+    Agent* next = nullptr;
+
+    Agent(string name, string surname, string patronymic, int sum)
+    {
+        this->name = name;
+        this->surname = surname;
+        this->patronymic = patronymic;
+        this->sum = sum;
+    }
+
+
+    bool isEquals(Agent* a1, Agent* a2)
+    {
+        return (
+            a1->name == a2->name &&
+            a1->surname == a2->surname &&
+            a1->patronymic == a2->patronymic
+            );
+    }
+
+    bool isNewStudent(Agent* a)
+    {
+
+        if (isEquals(this, a))
+        {
+            return false;
+        }
+        Agent* ptr = this;
+
+        while (ptr->next != nullptr)
+        {
+            if (isEquals(ptr->next, a))
+            {
+                return false;
+            }
+            ptr = ptr->next;
+        }
+
+        return true;
+    }
+
+    void uppdateScore(Agent* s, int newSum)
+    {
+        s->sum += newSum;
+    }
+
+    bool isWrongOrder(Agent* a1, Agent* a2)
+    {
+        return ( 
+            a1->name == a2->name && a1->surname == a2->surname && a1->patronymic > a2->patronymic
+            || a1->name == a2->name && a1->surname > a2->surname
+            || a1->name > a2->name
+            );
+    }
+
+
+    Agent* add(Agent* a) {
+
+
+        if ( isWrongOrder (this, a) )
+        {
+            a->next = this;
+            return a;
+        }
+
+
+        Agent* ptr = this;
+
+        if (isNewStudent(a))
+        {
+            while (ptr->next != nullptr && !isWrongOrder(ptr, a) )
+            {
+                ptr = ptr->next;
+            }
+
+            if (ptr->next == nullptr)
+            {
+                ptr->next = a;
+            }
+            else
+            {
+                Agent* temp = ptr->next;
+                ptr->next = a;
+                a->next = temp;
+            }
+
+            return this;
+        }
+        else
+        {
+            if (isEquals(a, this))
+            {
+                uppdateScore(this, a->sum);
+                return this;
+            }
+
+            while (ptr->next != nullptr)
+            {
+                if (isEquals(a, ptr->next))
+                {
+                    uppdateScore(ptr->next, a->sum);
+                    return this;
+                }
+
+                ptr = ptr->next;
+            }
+
+        }
+
+    }
+
+
+    void print() {
+
+        ofstream output("Output.txt", ios::out | ios::trunc);
+
+        Agent* iterPointer = this;
+        while (iterPointer != nullptr)
+        {
+            output << endl <<
+                iterPointer->name << "  " <<
+                iterPointer->surname << "  " <<
+                iterPointer->patronymic << "  " <<
+                iterPointer->sum << "  "
+                ;
+            iterPointer = iterPointer->next;
+        }
+
+        output.close();
+    }
+};
+
+int main()
+{
+    setlocale(LC_ALL, "rus");
+
+    ifstream input("input.txt");
+
+    int n;
+    input >> n;
+
+    string name, surname, patronymic;
+    int sum;
+
+    input >> name >> surname >> patronymic  >> sum;
+    Agent* agentsList = new Agent(name, surname, patronymic, sum);
+
+
+    for (int i = 1; i < n; i++)
+    {
+        input >> name >> surname >> patronymic >> sum;
+        agentsList = agentsList->add(new Agent(name, surname, patronymic, sum));
+    }
+
+    input.close();
+
+    agentsList->print();
+
+}

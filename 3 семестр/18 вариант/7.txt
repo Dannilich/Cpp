@@ -1,0 +1,127 @@
+#include <iostream>
+#include <fstream>
+
+using namespace std;
+
+class ScchoolChildren
+{
+private:
+    string name, surname, patronymic;
+    int group;
+
+
+public:
+    ScchoolChildren* next = nullptr;
+
+
+    ScchoolChildren(string name, string surname, string patronymic, int group)
+    {
+        this->name = name;
+        this->surname = surname;
+        this->patronymic = patronymic;
+        this->group = group;
+    }
+
+    bool isGreater(ScchoolChildren* sc1, ScchoolChildren* sc2)
+    {
+        if (sc1->group == sc2->group)
+        {
+            if (sc1->name == sc2->name)
+            {
+                if (sc1->surname == sc2->surname)
+                {
+                    return (sc1->patronymic < sc2->patronymic);
+                }
+
+                return (sc1->surname < sc2->surname);
+            }
+
+            return (sc1->name < sc2->name);
+        }
+
+        return (sc1->group < sc2->group);
+    }
+
+    ScchoolChildren* add(ScchoolChildren* sc) {
+
+        if (isGreater(sc, this))
+        {
+            sc->next = this;
+            return sc;
+        }
+
+
+        ScchoolChildren* ptr = this;
+
+        while (ptr->next != nullptr && isGreater(ptr->next, sc))
+        {
+            ptr = ptr->next;
+        }
+
+
+        if (ptr->next == nullptr)
+        {
+            ptr->next = sc;
+        }
+        else
+        {
+            ScchoolChildren* temp = ptr->next;
+            ptr->next = sc;
+            sc->next = temp;
+        }
+
+
+        return this;
+    }
+
+
+    void output() {
+
+        ofstream output("Output.txt", ios::out | ios::trunc);
+
+
+        ScchoolChildren* ptr = this;
+        while (ptr != nullptr)
+        {
+            output << endl << ptr->group << "  " << ptr->name << "  " << ptr->surname << "  " << ptr->patronymic;
+            ptr = ptr->next;
+        }
+
+        output.close();
+    }
+};
+
+
+int main()
+{
+    setlocale(LC_ALL, "Russian");
+
+    ifstream input("input.txt");
+
+
+    int n;
+    input >> n;
+
+    string name, surname, patronymic;
+    int group;
+
+    input >> name >> surname >> patronymic >> group;
+    ScchoolChildren* children = new ScchoolChildren(name, surname, patronymic, group);
+
+
+    for (int i = 1; i < n; i++)
+    {
+        input >> name >> surname >> patronymic >> group;
+        children = children->add(new ScchoolChildren(name, surname, patronymic, group));
+    }
+
+    input.close();
+
+
+    children->output();
+
+
+
+    system("pause");
+    return 0;
+}

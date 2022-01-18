@@ -1,0 +1,239 @@
+#include <iostream>
+#include <fstream>
+#include <vector>
+
+
+
+using namespace std;
+
+
+class Date
+{
+private:
+	int day, month, year;
+public:
+	Date(int day = 0, int month = 0, int year = 0)
+	{
+		this->day = day;
+		this->month = month;
+		this->year = year;
+	}
+
+
+	void setDay(int day) { this->day = day; };
+	void setMonth(int month) { this->month = month; };
+	void setYear(int year) { this->year = year; };
+
+	int getDay() { return day; };
+	int getMonth() { return month; };
+	int getYear() { return year; };
+};
+
+class Company : public Date
+{
+private:
+	int code;
+	string name, agentFio, phone, address;
+
+public:
+	void setCode(int code) { this->code = code; };
+	void setName(string name) { this->name = name; };
+	void setAgentFio(string agentFio) { this->agentFio = agentFio; };
+	void setPhone(string phone) { this->phone = phone; };
+	void setAddress(string address) { this->address = address; };
+
+
+	int getCode() { return code; };
+	string getName() { return name; };
+	string getAgentFio() { return agentFio; };
+	string getPhone() { return phone; };
+	string getAddress() { return address; };
+
+};
+
+class Client
+{
+private:
+	int code;
+	string fio, phone, address;
+
+public:
+	void setCode(int code) { this->code = code; };
+	void setAddress(string address) { this->address = address; };
+	void setPhone(string phone) { this->phone = phone; };
+	void setFio(string fio) { this->fio = fio; };
+
+	int getCode() { return code; };
+	string getAddress() { return address; };
+	string getPhone() { return phone; };
+	string getFio() { return fio; };
+
+};
+
+class Contract : public Date
+{
+private:
+	int clientCode, companyCode, money;
+
+public:
+	void setClientCode(int clientCode) { this->clientCode = clientCode; };
+	void setCompanyCode(int companyCode) { this->companyCode = companyCode; };
+	void setMoney(int insuranceMoney) { this->money = insuranceMoney; };
+
+	int getClientCode() { return clientCode; };
+	int getCompanyCode() { return companyCode; };
+	int getMoney() { return money; };
+};
+
+
+
+
+int main()
+{
+	setlocale(LC_ALL, "ru");
+
+
+	ifstream input("input.txt");
+
+
+	int tempInt;
+	string tempString;
+
+
+	int companyAmount;
+	input >> companyAmount;
+
+	vector <Company> companys(companyAmount);
+	for (Company& c : companys)
+	{
+		input >> tempInt;
+		c.setCode(tempInt);
+
+
+		input >> tempString;
+		c.setName(tempString);
+
+		input >> tempString;
+		c.setAgentFio(tempString);
+
+		input >> tempInt;
+		c.setDay(tempInt);
+
+		input >> tempInt;
+		c.setMonth(tempInt);
+
+		input >> tempInt;
+		c.setYear(tempInt);
+
+		input >> tempString;
+		c.setPhone(tempString);
+
+		input >> tempString;
+		c.setAddress(tempString);
+	}
+
+
+	int clientAmount;
+	input >> clientAmount;
+
+	vector <Client> clients(clientAmount);
+	for (Client& c : clients)
+	{
+		input >> tempInt;
+		c.setCode(tempInt);
+
+		input >> tempString;
+		c.setFio(tempString);
+
+		input >> tempString;
+		c.setAddress(tempString);
+
+		input >> tempString;
+		c.setPhone(tempString);
+	}
+
+	input.close();
+
+
+	int contractsAmout;
+	cout << "Количество контрактов: ";
+	cin >> contractsAmout;
+
+	vector <Contract> contracts(contractsAmout);
+	for (Contract& c : contracts)
+	{
+		cout << "\n\n";
+		for (Company comp : companys)
+		{
+			cout << "\n" << comp.getCode() << ": "<< comp.getName();
+		}
+		cout << "\n\nКод компании: ";
+		cin >> tempInt;
+		c.setCompanyCode(tempInt);
+		cout << "\n";
+
+		for (Client cl : clients)
+		{
+
+			cout << "\n"<< cl.getCode() << ": " << cl.getFio();
+		}
+		cout << "\n\nКод клиента: ";
+		cin >> tempInt;
+		c.setClientCode(tempInt);
+		cout << "\n";
+
+		cout << "\nДата сделки:";
+
+		cout  << "\nДень: ";
+		cin >> tempInt;
+		c.setDay(tempInt);
+
+		cout << "Месяц: ";
+		cin >> tempInt;
+		c.setMonth(tempInt);
+
+		cout << "Год: ";
+		cin >> tempInt;
+		c.setYear(tempInt);
+
+		cout << "\n\n" << "Страховая сумма: ";
+		cin >> tempInt;
+		c.setMoney(tempInt);
+	}
+
+	cout << "\n\n";
+
+	cout << "\n\n" << "Список сделок:";
+	for (Contract& c : contracts)
+	{
+		for (Company comp : companys)
+		{
+			if (comp.getCode() == c.getCompanyCode())
+			{
+				cout << "\n" << comp.getName();
+				break;
+			}
+		}
+
+		for (Client cl : clients)
+		{
+			if (cl.getCode() == c.getClientCode())
+			{
+				cout << " --- " << cl.getFio();
+				break;
+			}
+		}
+
+		cout << ": " << c.getMoney();
+	}
+
+
+	float sum = 0;
+	for (Contract& c : contracts)
+	{
+		sum += c.getMoney();
+	}
+	cout << "\n\n\nНакопленная страховая сумма: " << sum;
+
+	cout << "\n\n";
+}

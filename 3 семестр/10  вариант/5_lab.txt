@@ -1,0 +1,44 @@
+#include <iostream>
+#include <fstream>
+#include <vector>
+
+using namespace std;
+
+
+int main()
+{
+    setlocale(LC_ALL, "ru");
+
+
+	vector <int> numbers;
+    int minNumber = 6;
+	
+
+	for (int i = minNumber; i < 1000; i++)
+	{
+		if ( 
+			i % 3 == 1 &&
+			i % 4 == 2 &&
+			i % 5 == 3 &&
+			i % 6 == 4 
+			)
+		{
+			numbers.emplace_back(i);
+		}
+	}
+
+	if (numbers.size() > 0)
+	{
+		cout << "Существует !" << endl;
+		cout << "Вот эти числа: ";
+		for  (int num : numbers)
+		{
+			cout << endl << num;
+		}
+	}
+	else
+	{
+		cout << "Не существует";
+	}
+
+}

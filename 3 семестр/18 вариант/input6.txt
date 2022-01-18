@@ -1,0 +1,8 @@
+3
+1 Mihalev_Nikita_Sergeevich NN 12 02 2020
+2 Lomanov_Ivan_Ivanocich Moscow 05 05 2005
+3 Kurosh_Aleksey_Grigorevich Piter 06 06 1998
+
+2
+1 Vasili_Blashenni_Ivanovich surgeon
+2 Sergey_Umelov_Timofeevich doctor
