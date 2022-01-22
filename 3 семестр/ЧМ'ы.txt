@@ -1,0 +1,133 @@
+﻿#include <iostream>
+#include <functional> // для передачи функции в параметр
+
+using namespace std;
+ 
+//Исходная функция
+double func(double x) { return x*x -4 ; }
+
+/*
+обозначения
+
+а - начало отрезка функции
+б - конец отрезка функции
+epsilonOfInAccuracy - эпсилон интервал, погрешность, неточность
+n - количество разбиений
+f - передоваемая функция
+*/
+
+
+
+/*
+****************
+Методы половинчатого деления (деления на 2 или дихотомии)
+****************
+*/
+
+//Нахождение корня
+double findRootByDevidingOnTwo(double a, double b, int epsilonOfInAccuracy, const std::function<double(double)>& f)
+{
+	double mean;
+
+	do
+	{
+		mean = (a + b) / 2;//среднее
+
+		if (f(a) * f(mean) < 0) //Если значения функции на концах интервала [а, среднее] с разным знаком
+		{
+			b = mean;
+		}
+		else
+		{
+			a = mean;
+		}
+		
+
+	} while ( fabs(b-a) > epsilonOfInAccuracy );
+
+	return mean;
+}
+
+//Нахождение минимума
+double findMinimumByDevidingOnTwo(double a, double b, int epsilonOfInAccuracy, const std::function<double(double)>& f) 
+{
+	double mean, rightNeighborOfMean, leftNeighborOfMean;
+
+	do
+	{
+		mean = (a + b) / 2;//среднее
+		//Правая и левая эпсилон окрестность 
+		rightNeighborOfMean = mean + epsilonOfInAccuracy;
+		leftNeighborOfMean  = mean - epsilonOfInAccuracy;
+
+		if (f(leftNeighborOfMean) < f(rightNeighborOfMean)) 
+		{
+			b = mean;
+		}
+		else
+		{
+			a = mean;
+		}
+
+
+	} while (fabs(b - a) > epsilonOfInAccuracy);
+
+	return mean;
+}
+
+
+
+/*
+****************
+Методы вычислений интегралов
+****************
+*/
+
+//Метод левых прямоугольников 
+double integralByTheLeftRectangleMethod(double a, double b, int n, const std::function<double(double)>& f)
+{
+	double h = (b - a) / n;
+	double sum = 0;
+
+	for (int i = 0; i < n - 1; i++)
+	{
+		sum += f(a + i * h);
+	}
+
+	return sum * h;
+}
+
+//Метод правых прямоугольников  
+double integralByTheRightRectangleMethod(double a, double b, int n, const std::function<double(double)>& f)
+{
+	double h = (b - a) / n;
+	double sum = 0;
+
+	for (int i = 1; i < n; i++)
+	{
+		sum += f(a + i * h);
+	}
+
+	return sum * h;
+}
+
+//Интеграл методом трапеции (методом средних прямоугольников)
+double integralByTheTrapezoidMethod(double a, double b, int n, const std::function<double(double)>& f)
+{
+	double h = (b - a) / n;
+	double sum = (f(a) + f(b)) / 2;
+
+	for (int i = 1; i < n-1; i++)
+	{
+		sum += f(a + i * h);
+	}
+
+	return sum * h;
+}
+
+int main()
+{
+	setlocale(LC_ALL, "ru");
+
+	cout << findMinimumByDevidingOnTwo(-25, 25, 1, func);
+}
